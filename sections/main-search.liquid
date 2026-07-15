@@ -1,0 +1,59 @@
+{% style %}
+  #shopify-section-{{ section.id }} .search-results {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 56px 40px 100px;
+  }
+  #shopify-section-{{ section.id }} .search-results__title {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    margin: 0 0 40px;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .search-results__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+  #shopify-section-{{ section.id }} .search-results__empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    padding: 40px 0;
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .search-results { padding: 32px 20px 64px; }
+    #shopify-section-{{ section.id }} .search-results__grid { grid-template-columns: 1fr 1fr; gap: 20px 14px; }
+  }
+{% endstyle %}
+
+<div class="search-results">
+  <h1 class="search-results__title">
+    {% if search.performed %}
+      {{ 'general.search.results_for' | t: terms: search.terms, default: 'resultados para' }} &ldquo;{{ search.terms }}&rdquo; ({{ search.results_count }})
+    {% else %}
+      {{ 'general.search.title' | t: default: 'buscar' }}
+    {% endif %}
+  </h1>
+
+  {% if search.performed and search.results.size == 0 %}
+    <p class="search-results__empty">{{ 'general.search.no_results' | t: default: 'no se han encontrado resultados' }}</p>
+  {% elsif search.performed %}
+    <div class="search-results__grid">
+      {% for item in search.results %}
+        {% if item.object_type == 'product' %}
+          {% render 'product-card', product: item, show_badge: false %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Búsqueda",
+  "settings": []
+}
+{% endschema %}

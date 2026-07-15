@@ -1,0 +1,111 @@
+{% style %}
+  #shopify-section-{{ section.id }} .cart-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 40px 100px;
+  }
+  #shopify-section-{{ section.id }} .cart-page__title {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    margin: 0 0 40px;
+  }
+  #shopify-section-{{ section.id }} .cart-page__line {
+    display: flex;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(43,38,33,0.1);
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .cart-page__line img {
+    width: 96px;
+    height: 120px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  #shopify-section-{{ section.id }} .cart-page__line-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  #shopify-section-{{ section.id }} .cart-page__line-title { font-family: var(--font-body); font-size: 14px; color: var(--color-text); text-decoration: none; }
+  #shopify-section-{{ section.id }} .cart-page__line-variant { font-size: 12px; color: var(--color-text-muted); }
+  #shopify-section-{{ section.id }} .cart-page__qty {
+    width: 56px;
+    border: 1px solid var(--color-sand);
+    padding: 6px 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+  }
+  #shopify-section-{{ section.id }} .cart-page__line-price { font-family: var(--font-body); font-size: 14px; min-width: 90px; text-align: right; }
+  #shopify-section-{{ section.id }} .cart-page__remove { background: none; border: none; font-size: 11px; color: var(--color-text-muted); text-decoration: underline; }
+  #shopify-section-{{ section.id }} .cart-page__footer {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  #shopify-section-{{ section.id }} .cart-page__subtotal { font-family: var(--font-heading); font-size: 20px; }
+  #shopify-section-{{ section.id }} .cart-page__checkout {
+    background: var(--color-text);
+    color: var(--color-bg);
+    border: none;
+    padding: 16px 40px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .cart-page__empty {
+    text-align: center;
+    padding: 60px 0;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .cart-page { padding: 32px 20px 64px; }
+    #shopify-section-{{ section.id }} .cart-page__line img { width: 72px; height: 90px; }
+  }
+{% endstyle %}
+
+<div class="cart-page">
+  <h1 class="cart-page__title">{{ 'general.cart.title' | t: default: 'tu carrito' }}</h1>
+
+  {% if cart.item_count == 0 %}
+    <p class="cart-page__empty">
+      {{ 'general.cart.empty' | t: default: 'tu carrito está vacío' }} &mdash;
+      <a class="button-link" href="{{ routes.all_products_collection_url }}">{{ 'general.cart.continue_shopping' | t: default: 'seguir comprando' }}</a>
+    </p>
+  {% else %}
+    {% form 'cart', cart %}
+      {% for item in cart.items %}
+        <div class="cart-page__line">
+          {% if item.image %}
+            <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.title | escape }}" loading="lazy">
+          {% endif %}
+          <div class="cart-page__line-info">
+            <a class="cart-page__line-title" href="{{ item.url }}">{{ item.product.title | downcase }}</a>
+            {% unless item.variant.title == 'Default Title' %}
+              <span class="cart-page__line-variant">{{ item.variant.title }}</span>
+            {% endunless %}
+            <button type="button" class="cart-page__remove" data-cart-remove="{{ item.key }}">{{ 'general.cart.remove' | t: default: 'eliminar' }}</button>
+          </div>
+          <input class="cart-page__qty" type="number" min="0" name="updates[{{ item.key }}]" value="{{ item.quantity }}" data-cart-quantity="{{ item.key }}" aria-label="{{ 'general.cart.quantity' | t: default: 'cantidad' }}">
+          <span class="cart-page__line-price">{{ item.final_line_price | money }}</span>
+        </div>
+      {% endfor %}
+
+      <div class="cart-page__footer">
+        <span class="cart-page__subtotal">{{ 'general.cart.subtotal' | t: default: 'subtotal' }}: {{ cart.total_price | money }}</span>
+        <button type="submit" name="checkout" class="cart-page__checkout">{{ 'general.cart.checkout' | t: default: 'finalizar compra' }}</button>
+      </div>
+    {% endform %}
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Carrito",
+  "settings": []
+}
+{% endschema %}

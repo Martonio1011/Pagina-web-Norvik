@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "subtitle": "verano 2026",
+        "products_per_page": 24,
+        "columns_desktop": "3"
+      }
+    }
+  },
+  "order": ["main"]
+}

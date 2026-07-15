@@ -1,0 +1,131 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "quiet luxury for endless summers",
+        "button_label": "descubrir la colección",
+        "button_link": "shopify://collections/frontpage"
+      }
+    },
+    "value-props": {
+      "type": "value-props",
+      "settings": {
+        "accent": "sage"
+      },
+      "blocks": {
+        "leaf": {
+          "type": "item",
+          "settings": {
+            "icon": "leaf",
+            "title": "materiales naturales",
+            "description": "lino, algodón orgánico y fibras de origen responsable"
+          }
+        },
+        "globe": {
+          "type": "item",
+          "settings": {
+            "icon": "globe",
+            "title": "envío internacional",
+            "description": "entregas a toda europa y selección de destinos globales"
+          }
+        },
+        "circle": {
+          "type": "item",
+          "settings": {
+            "icon": "circle",
+            "title": "producción responsable",
+            "description": "talleres auditados, series limitadas y bajo desperdicio"
+          }
+        },
+        "square": {
+          "type": "item",
+          "settings": {
+            "icon": "square",
+            "title": "devoluciones sin complicaciones",
+            "description": "30 días para cambiar de opinión, sin preguntas"
+          }
+        }
+      },
+      "block_order": ["leaf", "globe", "circle", "square"]
+    },
+    "bestsellers": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "más vendidos",
+        "collection": "frontpage",
+        "products_to_show": 4,
+        "button_label": ""
+      }
+    },
+    "story": {
+      "type": "editorial-story",
+      "settings": {
+        "image_position": "left",
+        "heading": "hecho para durar, no para la temporada",
+        "body": "cada pieza nace de un taller que conocemos, con tejidos que envejecen bien. diseñamos con la costa mediterránea en mente: prendas que respiran, que se guardan de un verano a otro.",
+        "link_label": "nuestra historia",
+        "link": "shopify://pages/nuestra-historia"
+      }
+    },
+    "banners": {
+      "type": "category-banners",
+      "blocks": {
+        "ropa": {
+          "type": "banner",
+          "settings": {
+            "title": "ropa",
+            "link": "shopify://collections/dresses"
+          }
+        },
+        "bano": {
+          "type": "banner",
+          "settings": {
+            "title": "baño",
+            "link": "shopify://collections/resort-wear"
+          }
+        }
+      },
+      "block_order": ["ropa", "bano"]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "review",
+          "settings": {
+            "quote": "el tejido es precioso, se nota la calidad desde el primer lavado.",
+            "name": "elena m."
+          }
+        },
+        "review-2": {
+          "type": "review",
+          "settings": {
+            "quote": "el kaftán es justo lo que buscaba para el verano, atemporal.",
+            "name": "clara r."
+          }
+        },
+        "review-3": {
+          "type": "review",
+          "settings": {
+            "quote": "envío rápido y una atención al cliente excelente.",
+            "name": "sofía l."
+          }
+        }
+      },
+      "block_order": ["review-1", "review-2", "review-3"]
+    },
+    "instagram": {
+      "type": "instagram-feed",
+      "blocks": {
+        "img-1": { "type": "image", "settings": {} },
+        "img-2": { "type": "image", "settings": {} },
+        "img-3": { "type": "image", "settings": {} },
+        "img-4": { "type": "image", "settings": {} },
+        "img-5": { "type": "image", "settings": {} }
+      },
+      "block_order": ["img-1", "img-2", "img-3", "img-4", "img-5"]
+    }
+  },
+  "order": ["hero", "value-props", "bestsellers", "story", "banners", "testimonials", "instagram"]
+}

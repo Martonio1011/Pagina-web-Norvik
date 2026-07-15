@@ -1,0 +1,29 @@
+<div style="max-width:400px;margin:0 auto;padding:80px 40px;display:flex;flex-direction:column;gap:24px;">
+  <h1 style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin:0;text-align:center;">crear cuenta</h1>
+  {% form 'create_customer' %}
+    {% if form.errors %}
+      <p style="color:#A8735A;font-family:var(--font-body);font-size:13px;">{{ form.errors | default_errors }}</p>
+    {% endif %}
+    {% for field in 'first_name,last_name,email,password' | split: ',' %}
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-family:var(--font-body);font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text);" for="Customer{{ field }}">
+          {% case field %}
+            {% when 'first_name' %}nombre
+            {% when 'last_name' %}apellidos
+            {% when 'email' %}correo electrónico
+            {% when 'password' %}contraseña
+          {% endcase %}
+        </label>
+        <input
+          type="{% if field == 'email' %}email{% elsif field == 'password' %}password{% else %}text{% endif %}"
+          name="customer[{{ field }}]"
+          id="Customer{{ field }}"
+          {% if field == 'email' or field == 'password' %}required{% endif %}
+          style="border:none;border-bottom:1px solid var(--color-text);padding:8px 0;background:transparent;font-family:var(--font-body);font-size:14px;outline:none;"
+        >
+      </div>
+    {% endfor %}
+    <button type="submit" style="background:var(--color-text);color:var(--color-bg);border:none;padding:14px;font-family:var(--font-body);font-size:12.5px;letter-spacing:0.08em;text-transform:lowercase;">crear cuenta</button>
+  {% endform %}
+  <a class="button-link" href="{{ routes.account_login_url }}" style="align-self:center;">ya tengo cuenta</a>
+</div>

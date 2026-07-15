@@ -1,0 +1,68 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Norvik",
+    "theme_version": "1.0.0",
+    "theme_author": "Norvik",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Se mostrará a 32 x 32px"
+      }
+    ]
+  },
+  {
+    "name": "Colores",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "La paleta de NORVIK (crudo, carbón, salvia, terracota) está definida en el tema. Estos campos permiten ajustes puntuales sin tocar código."
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Fondo",
+        "default": "#FAF7F2"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Texto principal",
+        "default": "#2B2621"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Acento",
+        "default": "#7E8E6E"
+      }
+    ]
+  },
+  {
+    "name": "Redes sociales",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_instagram_link",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_pinterest_link",
+        "label": "Pinterest"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok_link",
+        "label": "TikTok"
+      }
+    ]
+  }
+]

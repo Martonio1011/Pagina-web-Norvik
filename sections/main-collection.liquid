@@ -1,0 +1,316 @@
+{% liquid
+  assign per_page = section.settings.products_per_page
+  assign columns_desktop = section.settings.columns_desktop
+%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .collection-hero {
+    padding: 64px 40px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(43,38,33,0.08);
+  }
+  #shopify-section-{{ section.id }} .collection-hero__title {
+    font-family: var(--font-heading);
+    font-size: 32px;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .collection-hero__count {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  #shopify-section-{{ section.id }} .collection-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    gap: 56px;
+    padding: 48px 40px 100px;
+  }
+
+  #shopify-section-{{ section.id }} .collection-filters {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-top: 6px;
+  }
+  #shopify-section-{{ section.id }} .filter-group__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+    text-transform: uppercase;
+  }
+  #shopify-section-{{ section.id }} .filter-group__toggle-chevron { font-size: 10px; color: var(--color-text-muted); }
+  #shopify-section-{{ section.id }} .filter-group__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    margin-top: 14px;
+  }
+  #shopify-section-{{ section.id }} .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+  }
+  #shopify-section-{{ section.id }} .filter-option input {
+    appearance: none;
+    width: 13px;
+    height: 13px;
+    border: 1px solid var(--color-toasted-beige);
+    flex-shrink: 0;
+    margin: 0;
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .filter-option input:checked { background: var(--color-text); border-color: var(--color-text); }
+  #shopify-section-{{ section.id }} .filter-option span {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+  #shopify-section-{{ section.id }} .filter-clear {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--color-sage);
+    text-decoration: underline;
+    width: fit-content;
+  }
+
+  #shopify-section-{{ section.id }} .collection-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .collection-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  #shopify-section-{{ section.id }} .collection-toolbar__count {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+  }
+  #shopify-section-{{ section.id }} .collection-toolbar__sort {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #shopify-section-{{ section.id }} .collection-toolbar__sort select {
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section.id }} .collection-grid {
+    display: grid;
+    grid-template-columns: repeat({{ columns_desktop }}, 1fr);
+    gap: 32px;
+  }
+
+  #shopify-section-{{ section.id }} .collection-empty {
+    padding: 60px 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  #shopify-section-{{ section.id }} .collection-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 24px;
+  }
+  #shopify-section-{{ section.id }} .collection-pagination a,
+  #shopify-section-{{ section.id }} .collection-pagination span {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .collection-pagination [aria-current="page"] { color: var(--color-text); text-decoration: underline; }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .collection-hero { padding: 40px 20px 24px; }
+    #shopify-section-{{ section.id }} .collection-hero__title { font-size: 24px; }
+    #shopify-section-{{ section.id }} .collection-layout { flex-direction: column; gap: 20px; padding: 24px 20px 80px; }
+    #shopify-section-{{ section.id }} .collection-filters {
+      width: 100%;
+      flex-direction: row;
+      gap: 10px;
+      overflow-x: auto;
+      padding-top: 0;
+      padding-bottom: 4px;
+    }
+    #shopify-section-{{ section.id }} .filter-group {
+      flex-shrink: 0;
+      border: 1px solid var(--color-sand);
+      border-radius: 20px;
+      padding: 8px 16px;
+      position: relative;
+    }
+    #shopify-section-{{ section.id }} .filter-group__toggle { font-size: 12.5px; text-transform: none; letter-spacing: 0; gap: 6px; white-space: nowrap; }
+    #shopify-section-{{ section.id }} .filter-group__panel {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-sand);
+      padding: 16px;
+      min-width: 200px;
+      z-index: 20;
+    }
+    #shopify-section-{{ section.id }} .filter-group__panel.is-open { display: flex; }
+    #shopify-section-{{ section.id }} .collection-grid { grid-template-columns: 1fr 1fr; gap: 20px 14px; }
+  }
+{% endstyle %}
+
+<div class="collection-hero">
+  <h1 class="collection-hero__title">{{ collection.title }}</h1>
+  <span class="collection-hero__count">{{ collection.products_count }} {{ 'collections.general.items' | t: default: 'piezas' }}{% if section.settings.subtitle != blank %} · {{ section.settings.subtitle }}{% endif %}</span>
+</div>
+
+<form id="CollectionFiltersForm-{{ section.id }}" method="get" action="{{ collection.url }}">
+<div class="collection-layout">
+  {% if collection.filters.size > 0 %}
+    <aside class="collection-filters">
+      {% for filter in collection.filters %}
+        <div class="filter-group">
+          <button type="button" class="filter-group__toggle" data-filter-dropdown-toggle="filter-panel-{{ section.id }}-{{ forloop.index }}" aria-expanded="false">
+            {{ filter.label }} <span class="filter-group__toggle-chevron">&#8964;</span>
+          </button>
+          <div class="filter-group__panel" id="filter-panel-{{ section.id }}-{{ forloop.index }}">
+            {% for value in filter.values %}
+              {% unless value.count == 0 and value.active == false %}
+                <label class="filter-option">
+                  <input
+                    type="checkbox"
+                    name="{{ value.param_name }}"
+                    value="{{ value.value }}"
+                    {% if value.active %}checked{% endif %}
+                    onchange="window.location.href = this.checked ? '{{ value.url_to_add }}' : '{{ value.url_to_remove }}';"
+                  >
+                  <span>{{ value.label }} ({{ value.count }})</span>
+                </label>
+              {% endunless %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      {% if collection.current_vendor or collection.current_type or current_tags %}
+        <a class="filter-clear" href="{{ collection.url }}">{{ 'collections.general.clear' | t: default: 'borrar filtros' }}</a>
+      {% endif %}
+    </aside>
+  {% endif %}
+
+  <div class="collection-main">
+    {% paginate collection.products by per_page %}
+      <div class="collection-toolbar">
+        <span class="collection-toolbar__count">
+          {% assign shown = paginate.current_offset | plus: collection.products.size %}
+          mostrando {{ shown }} de {{ collection.products_count }}
+        </span>
+        <div class="collection-toolbar__sort">
+          <label for="SortBy-{{ section.id }}" class="visually-hidden">{{ 'collections.general.sort_by' | t: default: 'ordenar por' }}</label>
+          <select name="sort_by" id="SortBy-{{ section.id }}" onchange="this.form.submit()">
+            {% for option in collection.sort_options %}
+              <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+                {{ 'collections.general.sort_by' | t: default: 'ordenar por' }}: {{ option.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      {% if collection.products.size > 0 %}
+        <div class="collection-grid">
+          {% for product in collection.products %}
+            {% render 'product-card', product: product, show_badge: true %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="collection-empty">{{ 'collections.general.no_matches' | t: default: 'no hay productos que coincidan con la selección.' }}</div>
+      {% endif %}
+
+      {% if paginate.pages > 1 %}
+        <nav class="collection-pagination" aria-label="{{ 'general.pagination.label' | t: default: 'paginación' }}">
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}">&larr;</a>
+          {% endif %}
+          {% for part in paginate.parts %}
+            {% if part.is_link %}
+              <a href="{{ part.url }}">{{ part.title }}</a>
+            {% else %}
+              <span aria-current="page">{{ part.title }}</span>
+            {% endif %}
+          {% endfor %}
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}">&rarr;</a>
+          {% endif %}
+        </nav>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>
+</form>
+
+{% schema %}
+{
+  "name": "Colección",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo (ej. temporada)",
+      "default": "verano 2026"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Productos por página",
+      "min": 6,
+      "max": 48,
+      "step": 6,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columnas (desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,36 @@
+{%- comment -%}
+  Accepts: product, show_badge (bool)
+{%- endcomment -%}
+{%- liquid
+  assign is_new = false
+  if product.tags contains 'nuevo' or product.tags contains 'new'
+    assign is_new = true
+  endif
+-%}
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card__media">
+    {% if product.featured_image %}
+      <img
+        src="{{ product.featured_image | image_url: width: 800 }}"
+        srcset="{{ product.featured_image | image_url: width: 500 }} 500w, {{ product.featured_image | image_url: width: 800 }} 800w"
+        sizes="(max-width: 860px) 50vw, 25vw"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        loading="lazy"
+        width="{{ product.featured_image.width }}"
+        height="{{ product.featured_image.height }}"
+      >
+    {% else %}
+      <div class="placeholder-shot"><span>{{ product.title | escape }}</span></div>
+    {% endif %}
+    {% if show_badge and is_new %}
+      <span class="product-card__badge">{{ 'products.product.new' | t: default: 'nuevo' }}</span>
+    {% endif %}
+  </a>
+  <a href="{{ product.url }}" class="product-card__title">{{ product.title | downcase }}</a>
+  <span class="product-card__price">
+    {% if product.price_varies %}{{ 'products.product.from' | t: default: 'desde' }} {% endif %}{{ product.price | money }}
+    {% if product.compare_at_price > product.price %}
+      <s class="product-card__price-compare">{{ product.compare_at_price | money }}</s>
+    {% endif %}
+  </span>
+</div>

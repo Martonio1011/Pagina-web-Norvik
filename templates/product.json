@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {}
+    },
+    "related": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "también te puede gustar",
+        "products_to_show": 4,
+        "button_label": ""
+      }
+    }
+  },
+  "order": ["main", "related"]
+}

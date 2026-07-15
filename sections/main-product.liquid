@@ -1,0 +1,170 @@
+{% liquid
+  assign product = product
+  assign current_variant = product.selected_or_first_available_variant
+%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .product {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 64px;
+    padding: 56px 40px 100px;
+  }
+  #shopify-section-{{ section.id }} .product__gallery {
+    flex: 1.2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    align-content: start;
+  }
+  #shopify-section-{{ section.id }} .product__gallery img,
+  #shopify-section-{{ section.id }} .product__gallery .placeholder-shot {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .product__gallery > *:only-child { grid-column: 1 / -1; }
+  #shopify-section-{{ section.id }} .product__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 420px;
+    position: sticky;
+    top: 40px;
+    align-self: flex-start;
+  }
+  #shopify-section-{{ section.id }} .product__title {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    color: var(--color-text);
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .product__price {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-muted);
+  }
+  #shopify-section-{{ section.id }} .product__price s { margin-left: 8px; opacity: 0.7; }
+  #shopify-section-{{ section.id }} .product__description {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+  }
+  #shopify-section-{{ section.id }} .product__option { display: flex; flex-direction: column; gap: 10px; }
+  #shopify-section-{{ section.id }} .product__option-label {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .product__option-values { display: flex; flex-wrap: wrap; gap: 8px; }
+  #shopify-section-{{ section.id }} .product__option-values label {
+    border: 1px solid var(--color-sand);
+    padding: 8px 14px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .product__option-values input { position: absolute; opacity: 0; pointer-events: none; }
+  #shopify-section-{{ section.id }} .product__option-values input:checked + span { text-decoration: underline; }
+  #shopify-section-{{ section.id }} .product__option-values label:has(input:checked) { border-color: var(--color-text); }
+  #shopify-section-{{ section.id }} .product__submit {
+    background: var(--color-text);
+    color: var(--color-bg);
+    border: none;
+    padding: 16px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+  }
+  #shopify-section-{{ section.id }} .product__submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  #shopify-section-{{ section.id }} .product__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(43,38,33,0.08);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .product { flex-direction: column; gap: 32px; padding: 32px 20px 64px; }
+    #shopify-section-{{ section.id }} .product__info { position: static; max-width: none; }
+  }
+{% endstyle %}
+
+<div class="product">
+  <div class="product__gallery">
+    {% if product.media.size > 0 %}
+      {% for media in product.media %}
+        <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+      {% endfor %}
+    {% else %}
+      <div class="placeholder-shot"><span>{{ product.title | escape }}</span></div>
+    {% endif %}
+  </div>
+
+  <div class="product__info">
+    <h1 class="product__title">{{ product.title | downcase }}</h1>
+    <div class="product__price">
+      {{ current_variant.price | money }}
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <s>{{ current_variant.compare_at_price | money }}</s>
+      {% endif %}
+    </div>
+
+    {% if product.description != blank %}
+      <div class="product__description">{{ product.description }}</div>
+    {% endif %}
+
+    {% form 'product', product, data-product-form: true %}
+      <script type="application/json" data-product-variants>{{ product.variants | json }}</script>
+      <input type="hidden" name="id" value="{{ current_variant.id }}" data-product-variant-id>
+
+      {% unless product.has_only_default_variant %}
+        {% for option in product.options_with_values %}
+          <div class="product__option">
+            <span class="product__option-label">{{ option.name }}</span>
+            <div class="product__option-values">
+              {% for value in option.values %}
+                <label>
+                  <input type="radio" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" {% if option.selected_value == value %}checked{% endif %}>
+                  <span>{{ value }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endunless %}
+
+      <button type="submit" class="product__submit" {% unless current_variant.available %}disabled{% endunless %}>
+        {% if current_variant.available %}
+          {{ 'products.product.add_to_cart' | t: default: 'añadir al carrito' }}
+        {% else %}
+          {{ 'products.product.sold_out' | t: default: 'agotado' }}
+        {% endif %}
+      </button>
+    {% endform %}
+
+    <div class="product__meta">
+      {% if product.type != blank %}<span>{{ 'products.product.category' | t: default: 'categoría' }}: {{ product.type | downcase }}</span>{% endif %}
+      <span>{{ 'products.product.free_shipping' | t: default: 'envío gratuito desde 90€ · devoluciones en 30 días' }}</span>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Página de producto",
+  "settings": []
+}
+{% endschema %}

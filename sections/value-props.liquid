@@ -1,0 +1,138 @@
+{% liquid
+  assign accent = '#7E8E6E'
+  if section.settings.accent == 'terracotta'
+    assign accent = '#A8735A'
+  endif
+%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .value-props {
+    width: 100%;
+    background: var(--color-bg);
+    padding: 64px 40px;
+  }
+  #shopify-section-{{ section.id }} .value-props__grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  #shopify-section-{{ section.id }} .value-props__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 0 12px;
+  }
+  #shopify-section-{{ section.id }} .value-props__icon {
+    width: 26px;
+    height: 26px;
+    border: 1px solid {{ accent }};
+  }
+  #shopify-section-{{ section.id }} .value-props__icon--leaf { border-radius: 50% 0 50% 50%; transform: rotate(45deg); }
+  #shopify-section-{{ section.id }} .value-props__icon--globe { border-radius: 50%; position: relative; overflow: hidden; }
+  #shopify-section-{{ section.id }} .value-props__icon--globe::before,
+  #shopify-section-{{ section.id }} .value-props__icon--globe::after {
+    content: '';
+    position: absolute;
+    background: {{ accent }};
+  }
+  #shopify-section-{{ section.id }} .value-props__icon--globe::before { top: 50%; left: -4px; right: -4px; height: 1px; }
+  #shopify-section-{{ section.id }} .value-props__icon--globe::after { left: 50%; top: -4px; bottom: -4px; width: 1px; }
+  #shopify-section-{{ section.id }} .value-props__icon--circle { border-radius: 50%; }
+  #shopify-section-{{ section.id }} .value-props__icon--square { width: 22px; height: 22px; }
+  #shopify-section-{{ section.id }} .value-props__title {
+    font-family: var(--font-heading);
+    font-size: 13.5px;
+    letter-spacing: 0.03em;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .value-props__desc {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    max-width: 200px;
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .value-props { padding: 40px 20px; }
+    #shopify-section-{{ section.id }} .value-props__grid { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
+  }
+{% endstyle %}
+
+<div class="value-props">
+  <div class="value-props__grid">
+    {% for block in section.blocks %}
+      <div class="value-props__item" {{ block.shopify_attributes }}>
+        <div class="value-props__icon value-props__icon--{{ block.settings.icon }}"></div>
+        <span class="value-props__title">{{ block.settings.title }}</span>
+        <span class="value-props__desc">{{ block.settings.description }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Propuesta de valor",
+  "settings": [
+    {
+      "type": "select",
+      "id": "accent",
+      "label": "Color de acento",
+      "options": [
+        { "value": "sage", "label": "Salvia" },
+        { "value": "terracotta", "label": "Terracota" }
+      ],
+      "default": "sage"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Ítem",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icono",
+          "options": [
+            { "value": "leaf", "label": "Hoja" },
+            { "value": "globe", "label": "Globo" },
+            { "value": "circle", "label": "Círculo" },
+            { "value": "square", "label": "Cuadrado" }
+          ],
+          "default": "leaf"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "materiales naturales"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Descripción",
+          "default": "lino, algodón orgánico y fibras de origen responsable"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Propuesta de valor",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "leaf", "title": "materiales naturales", "description": "lino, algodón orgánico y fibras de origen responsable" } },
+        { "type": "item", "settings": { "icon": "globe", "title": "envío internacional", "description": "entregas a toda europa y selección de destinos globales" } },
+        { "type": "item", "settings": { "icon": "circle", "title": "producción responsable", "description": "talleres auditados, series limitadas y bajo desperdicio" } },
+        { "type": "item", "settings": { "icon": "square", "title": "devoluciones sin complicaciones", "description": "30 días para cambiar de opinión, sin preguntas" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

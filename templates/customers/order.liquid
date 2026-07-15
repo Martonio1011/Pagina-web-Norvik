@@ -1,0 +1,23 @@
+<div style="max-width:800px;margin:0 auto;padding:64px 40px 100px;display:flex;flex-direction:column;gap:24px;">
+  <h1 style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin:0;">pedido {{ order.name }}</h1>
+  <span style="font-family:var(--font-body);font-size:13px;color:var(--color-text-muted);">{{ order.created_at | date: '%d/%m/%Y' }} · {{ order.fulfillment_status_label }}</span>
+
+  <div style="display:flex;flex-direction:column;">
+    {% for line_item in order.line_items %}
+      <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid rgba(43,38,33,0.08);align-items:center;">
+        {% if line_item.image %}
+          <img src="{{ line_item.image | image_url: width: 160 }}" alt="{{ line_item.title | escape }}" style="width:64px;height:80px;object-fit:cover;">
+        {% endif %}
+        <span style="flex:1;font-family:var(--font-body);font-size:13.5px;color:var(--color-text);">{{ line_item.title }}</span>
+        <span style="font-family:var(--font-body);font-size:13px;color:var(--color-text-muted);">x{{ line_item.quantity }}</span>
+        <span style="font-family:var(--font-body);font-size:13.5px;color:var(--color-text);">{{ line_item.final_line_price | money }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;font-family:var(--font-heading);font-size:18px;color:var(--color-text);">
+    total: {{ order.total_price | money }}
+  </div>
+
+  <a class="button-link" href="{{ routes.account_url }}" style="align-self:flex-start;">volver a mi cuenta</a>
+</div>

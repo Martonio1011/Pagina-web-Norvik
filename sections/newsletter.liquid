@@ -1,0 +1,119 @@
+{% style %}
+  #shopify-section-{{ section.id }} .newsletter {
+    width: 100%;
+    background: var(--color-newsletter-bg);
+    padding: 80px 40px;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .newsletter__inner {
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  #shopify-section-{{ section.id }} .newsletter__title {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .newsletter__subtitle {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  #shopify-section-{{ section.id }} .newsletter__form {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 380px;
+    border-bottom: 1px solid var(--color-text);
+    padding-bottom: 8px;
+    margin-top: 8px;
+  }
+  #shopify-section-{{ section.id }} .newsletter__form input[type="email"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .newsletter__form button {
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+    text-transform: lowercase;
+  }
+  #shopify-section-{{ section.id }} .newsletter__success {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-sage);
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .newsletter { padding: 56px 24px; }
+    #shopify-section-{{ section.id }} .newsletter__title { font-size: 20px; }
+  }
+{% endstyle %}
+
+<div class="newsletter">
+  <div class="newsletter__inner">
+    <span class="newsletter__title">{{ section.settings.title }}</span>
+    <span class="newsletter__subtitle">{{ section.settings.subtitle }}</span>
+
+    {% form 'customer', id: 'newsletter-form-' | append: section.id %}
+      {% if form.posted_successfully? %}
+        <span class="newsletter__success">{{ 'general.newsletter.success' | t: default: 'gracias por suscribirte' }}</span>
+      {% else %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="newsletter__form">
+          <input type="email" name="contact[email]" placeholder="{{ section.settings.placeholder }}" required aria-label="{{ section.settings.placeholder }}">
+          <button type="submit">{{ section.settings.button_label }} &rarr;</button>
+        </div>
+        {% if form.errors %}
+          <span class="newsletter__success" style="color:#A8735A;">{{ form.errors.messages['email'] }}</span>
+        {% endif %}
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "acceso anticipado a nuevos drops"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo",
+      "default": "sé la primera en conocer cada nueva colección, antes de que llegue a la tienda"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Placeholder del email",
+      "default": "tu correo electrónico"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "default": "suscribirme"
+    }
+  ]
+}
+{% endschema %}

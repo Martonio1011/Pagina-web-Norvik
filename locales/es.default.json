@@ -1,0 +1,57 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "ir al contenido",
+      "menu": "abrir menú",
+      "main_nav": "navegación principal",
+      "close": "cerrar"
+    },
+    "meta": {
+      "tags": "etiquetas {{ tags }}",
+      "page": "página {{ page }}"
+    },
+    "search": {
+      "placeholder": "buscar productos",
+      "title": "buscar",
+      "results_for": "resultados para",
+      "no_results": "no se han encontrado resultados"
+    },
+    "account": {
+      "title": "cuenta"
+    },
+    "cart": {
+      "title": "tu carrito",
+      "empty": "tu carrito está vacío",
+      "quantity": "cantidad",
+      "remove": "eliminar",
+      "subtotal": "subtotal",
+      "view_cart": "ver carrito",
+      "checkout": "finalizar compra",
+      "continue_shopping": "seguir comprando"
+    },
+    "newsletter": {
+      "success": "gracias por suscribirte"
+    },
+    "pagination": {
+      "label": "paginación"
+    }
+  },
+  "products": {
+    "product": {
+      "new": "nuevo",
+      "from": "desde",
+      "add_to_cart": "añadir al carrito",
+      "sold_out": "agotado",
+      "category": "categoría",
+      "free_shipping": "envío gratuito desde 90€ · devoluciones en 30 días"
+    }
+  },
+  "collections": {
+    "general": {
+      "items": "piezas",
+      "clear": "borrar filtros",
+      "sort_by": "ordenar por",
+      "no_matches": "no hay productos que coincidan con la selección."
+    }
+  }
+}

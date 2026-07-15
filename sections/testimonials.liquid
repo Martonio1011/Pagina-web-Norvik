@@ -1,0 +1,144 @@
+{% style %}
+  #shopify-section-{{ section.id }} .testimonials {
+    padding: 90px 40px;
+  }
+  #shopify-section-{{ section.id }} .testimonials__heading {
+    text-align: center;
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  #shopify-section-{{ section.id }} .testimonials__title {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .testimonials__rating {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+  #shopify-section-{{ section.id }} .testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  #shopify-section-{{ section.id }} .testimonial {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #shopify-section-{{ section.id }} .testimonial__avatar {
+    aspect-ratio: 1/1;
+    max-width: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section.id }} .testimonial__avatar img,
+  #shopify-section-{{ section.id }} .testimonial__avatar .placeholder-shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .testimonial__quote {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    font-style: italic;
+  }
+  #shopify-section-{{ section.id }} .testimonial__name {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--color-text);
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .testimonials { padding: 56px 20px; }
+    #shopify-section-{{ section.id }} .testimonials__grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+{% endstyle %}
+
+<div class="testimonials">
+  <div class="testimonials__heading">
+    <span class="testimonials__title">{{ section.settings.heading }}</span>
+    <span class="testimonials__rating">{{ section.settings.rating_text }}</span>
+  </div>
+  <div class="testimonials__grid">
+    {% for block in section.blocks %}
+      <div class="testimonial" {{ block.shopify_attributes }}>
+        <div class="testimonial__avatar">
+          {% if block.settings.avatar %}
+            <img src="{{ block.settings.avatar | image_url: width: 160 }}" alt="{{ block.settings.name | escape }}" loading="lazy">
+          {% else %}
+            <div class="placeholder-shot" style="font-size:8px;"><span>cliente</span></div>
+          {% endif %}
+        </div>
+        <p class="testimonial__quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
+        <span class="testimonial__name">{{ block.settings.name }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Reseñas",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "lo que dicen nuestras clientas"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Texto de valoración",
+      "default": "4.9 / 5 · más de 1.200 reseñas"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Reseña",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Foto"
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Cita",
+          "default": "el tejido es precioso, se nota la calidad desde el primer lavado."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre",
+          "default": "elena m."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "Reseñas",
+      "blocks": [
+        { "type": "review", "settings": { "quote": "el tejido es precioso, se nota la calidad desde el primer lavado.", "name": "elena m." } },
+        { "type": "review", "settings": { "quote": "el kaftán es justo lo que buscaba para el verano, atemporal.", "name": "clara r." } },
+        { "type": "review", "settings": { "quote": "envío rápido y una atención al cliente excelente.", "name": "sofía l." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

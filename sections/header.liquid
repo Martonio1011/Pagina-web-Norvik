@@ -1,0 +1,304 @@
+{% liquid
+  assign menu = section.settings.menu
+  assign logo_height_desktop = section.settings.logo_height | default: 26
+  assign logo_height_mobile = logo_height_desktop | times: 0.77 | round
+%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .site-header {
+    width: 100%;
+    background: var(--color-bg);
+    border-bottom: 1px solid rgba(43,38,33,0.1);
+    position: relative;
+    z-index: 40;
+  }
+  #shopify-section-{{ section.id }} .site-header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 22px 40px;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav-col {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    overflow: hidden;
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav {
+    display: flex;
+    gap: 28px;
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav a {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+    text-decoration: none;
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+  #shopify-section-{{ section.id }} .site-header__logo-col {
+    text-align: center;
+    padding: 0 16px;
+    display: flex;
+    justify-content: center;
+  }
+  #shopify-section-{{ section.id }} .site-header__logo-col img {
+    height: {{ logo_height_desktop }}px;
+    width: auto;
+    mix-blend-mode: multiply;
+    object-fit: contain;
+  }
+  #shopify-section-{{ section.id }} .site-header__logo-col .site-header__wordmark {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.28em;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .site-header__icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+  }
+  #shopify-section-{{ section.id }} .site-header__icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: var(--color-text);
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .site-header__icon-btn svg { display: block; }
+  #shopify-section-{{ section.id }} .site-header__cart-count {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    min-width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: 9.5px;
+    line-height: 15px;
+    text-align: center;
+    padding: 0 3px;
+  }
+  #shopify-section-{{ section.id }} .site-header__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 20px;
+    height: 14px;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  #shopify-section-{{ section.id }} .site-header__hamburger span {
+    width: 100%;
+    height: 1px;
+    background: var(--color-text);
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .search-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    background: var(--color-newsletter-bg);
+    border-bottom: 1px solid rgba(43,38,33,0.08);
+  }
+  #shopify-section-{{ section.id }} .search-panel.is-open { max-height: 90px; }
+  #shopify-section-{{ section.id }} .search-panel__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 40px;
+  }
+  #shopify-section-{{ section.id }} .search-panel input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    border-bottom: 1px solid var(--color-text);
+    padding: 8px 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text);
+    outline: none;
+  }
+
+  #shopify-section-{{ section.id }} .mobile-nav-panel {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: rgba(43,38,33,0.4);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__sheet {
+    background: var(--color-bg);
+    width: 82%;
+    max-width: 340px;
+    height: 100%;
+    padding: 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel.is-open .mobile-nav-panel__sheet {
+    transform: translateX(0);
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__close {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__links {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__links a {
+    font-family: var(--font-body);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  @media (max-width: 860px) {
+    #shopify-section-{{ section.id }} .site-header__inner { padding: 16px 20px; }
+    #shopify-section-{{ section.id }} .site-header__nav { display: none; }
+    #shopify-section-{{ section.id }} .site-header__hamburger { display: flex; }
+    #shopify-section-{{ section.id }} .site-header__nav-col { gap: 10px; }
+    #shopify-section-{{ section.id }} .site-header__logo-col img { height: {{ logo_height_mobile }}px; }
+    #shopify-section-{{ section.id }} .site-header__logo-col .site-header__wordmark { font-size: 18px; }
+    #shopify-section-{{ section.id }} .site-header__icons { gap: 14px; }
+  }
+
+  body.no-scroll { overflow: hidden; }
+{% endstyle %}
+
+<header class="site-header">
+  <div class="search-panel" data-search-panel>
+    <div class="search-panel__inner">
+      <form action="{{ routes.search_url }}" method="get" role="search">
+        <input type="search" name="q" placeholder="{{ 'general.search.placeholder' | t: default: 'buscar productos' }}" value="{{ search.terms | escape }}">
+        <input type="hidden" name="type" value="product">
+      </form>
+    </div>
+  </div>
+
+  <div class="site-header__inner">
+    <div class="site-header__nav-col">
+      <button class="site-header__hamburger" data-mobile-nav-toggle aria-expanded="false" aria-label="{{ 'general.accessibility.menu' | t: default: 'abrir menú' }}">
+        <span></span><span></span><span></span>
+      </button>
+      {% if menu != blank %}
+        <nav class="site-header__nav" aria-label="{{ 'general.accessibility.main_nav' | t: default: 'navegación principal' }}">
+          {% for link in menu.links %}
+            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | downcase }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+    </div>
+
+    <div class="site-header__logo-col">
+      <a href="{{ routes.root_url }}">
+        {% if section.settings.logo %}
+          <img
+            src="{{ section.settings.logo | image_url: width: 300 }}"
+            alt="{{ shop.name }}"
+            width="{{ section.settings.logo.width }}"
+            height="{{ section.settings.logo.height }}"
+            loading="eager"
+          >
+        {% else %}
+          <img
+            src="{{ 'norvik-logo.png' | asset_url }}"
+            alt="{{ shop.name }}"
+            loading="eager"
+          >
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="site-header__icons">
+      <button class="site-header__icon-btn" data-search-toggle aria-label="{{ 'general.search.title' | t: default: 'buscar' }}">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor"/><line x1="11.5" y1="11.5" x2="16" y2="16" stroke="currentColor"/></svg>
+      </button>
+      <a class="site-header__icon-btn" href="{{ routes.account_url }}" aria-label="{{ 'general.account.title' | t: default: 'cuenta' }}">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="7" stroke="currentColor"/></svg>
+      </a>
+      <button class="site-header__icon-btn" data-cart-drawer-toggle aria-label="{{ 'general.cart.title' | t: default: 'carrito' }}">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none">
+          <rect x="0.5" y="5.5" width="16" height="10" rx="1" stroke="currentColor"/>
+          <path d="M4 5.5V4.5C4 2.29 5.79 0.5 8 0.5V0.5C10.21 0.5 12 2.29 12 4.5V5.5" stroke="currentColor" fill="none"/>
+        </svg>
+        <span class="site-header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-nav-panel" data-mobile-nav-panel>
+    <div class="mobile-nav-panel__sheet">
+      <button class="mobile-nav-panel__close" data-mobile-nav-close aria-label="{{ 'general.accessibility.close' | t: default: 'cerrar' }}">&times;</button>
+      <nav class="mobile-nav-panel__links">
+        {% if menu != blank %}
+          {% for link in menu.links %}
+            <a href="{{ link.url }}">{{ link.title | downcase }}</a>
+          {% endfor %}
+        {% endif %}
+        <a href="{{ routes.account_url }}">{{ 'general.account.title' | t: default: 'cuenta' }}</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Cabecera",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Recomendado: PNG con fondo blanco (se funde con el fondo con mix-blend-mode)"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Altura del logo (desktop)",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menú de navegación",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}
