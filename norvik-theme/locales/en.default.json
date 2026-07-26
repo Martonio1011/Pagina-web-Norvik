@@ -555,6 +555,11 @@
     },
     "placeholder": {
       "product": "Product name"
+    },
+    "video": {
+      "play": "Play",
+      "shop": "Shop this look",
+      "placeholder": "Add a customer video in the theme editor"
     }
   }
 }

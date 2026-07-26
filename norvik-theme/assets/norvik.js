@@ -230,6 +230,48 @@
   }
 
   /* ------------------------------------------------------------------
+     Customer videos — click-to-play facade.
+     External embeds (YouTube/Vimeo) are only injected on click so their
+     scripts never affect the initial page load.
+     ------------------------------------------------------------------ */
+
+  document.addEventListener('click', function (event) {
+    var facade = event.target.closest('[data-nv-video-play]');
+    if (!facade) return;
+    event.preventDefault();
+
+    var holder = facade.closest('[data-nv-video]');
+    if (!holder) return;
+
+    var embed = facade.dataset.nvVideoPlay;
+    if (embed) {
+      var iframe = document.createElement('iframe');
+      iframe.src = embed;
+      iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('title', facade.getAttribute('aria-label') || 'Customer video');
+      holder.innerHTML = '';
+      holder.appendChild(iframe);
+      return;
+    }
+
+    /* Native Shopify-hosted video already in the DOM behind the poster. */
+    var video = holder.querySelector('video');
+    if (video) {
+      facade.hidden = true;
+      video.setAttribute('controls', 'controls');
+      var playing = video.play();
+      if (playing && typeof playing.catch === 'function') {
+        playing.catch(function () {
+          /* Autoplay blocked: the native controls are visible, so the
+             shopper can still start it manually. */
+          facade.hidden = false;
+        });
+      }
+    }
+  });
+
+  /* ------------------------------------------------------------------
      Email popup — 15s or 50% scroll, whichever comes first, once a session.
      ------------------------------------------------------------------ */
 

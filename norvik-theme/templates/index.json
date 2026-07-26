@@ -20,22 +20,39 @@
       "blocks": {
         "dresses": {
           "type": "pill",
-          "settings": { "collection": "dresses", "label": "Dresses" }
+          "settings": {
+            "collection": "dresses",
+            "label": "Dresses"
+          }
         },
         "resort": {
           "type": "pill",
-          "settings": { "collection": "resort-wear", "label": "Resort wear" }
+          "settings": {
+            "collection": "resort-wear",
+            "label": "Resort wear"
+          }
         },
         "accessories": {
           "type": "pill",
-          "settings": { "collection": "accessories", "label": "Jewellery & bags" }
+          "settings": {
+            "collection": "accessories",
+            "label": "Jewellery & bags"
+          }
         },
         "all": {
           "type": "pill",
-          "settings": { "label": "Shop all", "link": "/collections/all" }
+          "settings": {
+            "label": "Shop all",
+            "link": "/collections/all"
+          }
         }
       },
-      "block_order": ["dresses", "resort", "accessories", "all"],
+      "block_order": [
+        "dresses",
+        "resort",
+        "accessories",
+        "all"
+      ],
       "settings": {
         "heading": "Shop by category",
         "style": "visual",
@@ -93,7 +110,12 @@
           }
         }
       },
-      "block_order": ["vacation", "wedding", "weekend", "date"],
+      "block_order": [
+        "vacation",
+        "wedding",
+        "weekend",
+        "date"
+      ],
       "settings": {
         "eyebrow": "Where are you going?",
         "heading": "Shop the occasion",
@@ -135,7 +157,11 @@
           }
         }
       },
-      "block_order": ["shipping", "welcome", "returns"],
+      "block_order": [
+        "shipping",
+        "welcome",
+        "returns"
+      ],
       "settings": {
         "padding_top": 24,
         "padding_bottom": 24
@@ -146,7 +172,9 @@
       "blocks": {
         "heading": {
           "type": "heading",
-          "settings": { "heading": "Be first to know" }
+          "settings": {
+            "heading": "Be first to know"
+          }
         },
         "paragraph": {
           "type": "paragraph",
@@ -154,12 +182,29 @@
             "text": "<p>New arrivals, restocks and the occasional 15% off. Nothing else.</p>"
           }
         },
-        "email_form": { "type": "email_form", "settings": {} }
+        "email_form": {
+          "type": "email_form",
+          "settings": {}
+        }
       },
-      "block_order": ["heading", "paragraph", "email_form"],
+      "block_order": [
+        "heading",
+        "paragraph",
+        "email_form"
+      ],
       "settings": {
         "color_scheme": "scheme-2",
         "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "customer_videos": {
+      "type": "customer-videos",
+      "settings": {
+        "eyebrow": "Real people, real fit",
+        "heading": "Seen on our customers",
+        "subheading": "Tap to watch how it moves, drapes and fits in real life.",
         "padding_top": 48,
         "padding_bottom": 48
       }
@@ -172,6 +217,7 @@
     "editorial",
     "ugc",
     "incentives",
+    "customer_videos",
     "newsletter"
   ]
 }
