@@ -23,6 +23,7 @@ Desde esta carpeta (`norvik-control-center`):
 ```bash
 npm install
 npx prisma migrate dev --name init
+npx prisma db seed
 npm run dev
 ```
 
@@ -31,10 +32,11 @@ Después abre <http://localhost:3000>.
 Qué hace cada comando:
 
 1. `npm install` instala las dependencias y genera el cliente de Prisma.
-2. `npx prisma migrate dev --name init` crea la base de datos
-   `prisma/dev.db` y ejecuta el seed, que deja ya cargado el checklist maestro
-   completo (25 tareas), la rutina diaria y los 6 productos con stock 0.
-3. `npm run dev` levanta la aplicación.
+2. `npx prisma migrate dev --name init` crea la base de datos `prisma/dev.db`.
+3. `npx prisma db seed` carga el checklist maestro completo (25 tareas), la
+   rutina diaria y los 6 productos con stock 0. Es idempotente: si ya hay
+   datos no duplica nada.
+4. `npm run dev` levanta la aplicación.
 
 A partir de la primera vez basta con `npm run dev`.
 

@@ -22,11 +22,17 @@ call npm install
 if errorlevel 1 goto error
 
 :comprobar_base
-if exist "prisma\dev.db" goto arrancar
+if exist "prisma\dev.db" goto sembrar
 echo.
-echo  Creando la base de datos y cargando el checklist...
+echo  Creando la base de datos...
 echo.
 call npx prisma migrate dev --name init
+if errorlevel 1 goto error
+
+:sembrar
+rem Carga el checklist si aun no esta. Si ya esta, no duplica nada.
+echo  Comprobando el checklist...
+call npx prisma db seed
 if errorlevel 1 goto error
 
 :acceso_directo
