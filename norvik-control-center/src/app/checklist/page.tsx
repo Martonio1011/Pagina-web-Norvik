@@ -2,6 +2,7 @@ import Link from "next/link";
 import { crearTarea } from "@/actions/tareas";
 import { TareaItem } from "@/components/tarea-item";
 import { Barra, COLOR_SEMAFORO, TituloPagina, Vacio } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import {
   AREAS,
@@ -19,6 +20,7 @@ export default async function PaginaChecklist(props: {
   searchParams: Promise<{ area?: string; estado?: string; prioridad?: string }>;
 }) {
   const filtros = await props.searchParams;
+  await asegurarDatosIniciales();
   const tareas = await prisma.tarea.findMany({ orderBy: { orden: "asc" } });
 
   const visibles = ordenarPorUrgencia(

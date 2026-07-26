@@ -1,3 +1,4 @@
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import {
   AREAS,
@@ -55,6 +56,7 @@ export type Alerta = {
 };
 
 export async function cargarPanel() {
+  await asegurarDatosIniciales();
   const hoy = claveDia();
   const finDeHoy = new Date(`${hoy}T23:59:59.999`);
 
