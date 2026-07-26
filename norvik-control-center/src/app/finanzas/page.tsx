@@ -4,6 +4,7 @@ import {
   crearGasto,
 } from "@/actions/finanzas";
 import { Metrica, TituloPagina, Vacio } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import { CATEGORIAS_GASTO, ETIQUETA_CATEGORIA_GASTO } from "@/lib/dominio";
 import { dinero, fechaCorta, mesLargo, valorInputFecha } from "@/lib/formato";
@@ -15,6 +16,7 @@ function claveMes(fecha: Date): string {
 }
 
 export default async function PaginaFinanzas() {
+  await asegurarDatosIniciales();
   const [gastos, pedidos, ajustes] = await Promise.all([
     prisma.gasto.findMany({ orderBy: { fecha: "desc" } }),
     prisma.pedido.findMany({ orderBy: { fecha: "desc" } }),

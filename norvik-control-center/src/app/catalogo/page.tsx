@@ -3,11 +3,14 @@ import {
   borrarProducto,
   crearProducto,
 } from "@/actions/catalogo";
+import { BotonImportarProductos } from "@/components/boton-importar-productos";
 import { CalculadoraPrecios } from "@/components/calculadora-precios";
 import { TituloPagina, Vacio } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import { margen, precioSugerido } from "@/lib/dominio";
 import { dinero, porcentaje } from "@/lib/formato";
+import { PRODUCTOS_SHOPIFY } from "@/lib/sincronizacion";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +41,7 @@ function avisosDe(producto: {
 }
 
 export default async function PaginaCatalogo() {
+  await asegurarDatosIniciales();
   const [productos, ajustes] = await Promise.all([
     prisma.producto.findMany({ orderBy: { nombre: "asc" } }),
     prisma.ajustes.findUnique({ where: { id: 1 } }),
@@ -45,12 +49,19 @@ export default async function PaginaCatalogo() {
   const moneda = ajustes?.moneda ?? "EUR";
   const margenObjetivo = ajustes?.margenObjetivo ?? 65;
 
+  const nombresExistentes = new Set(productos.map((p) => p.nombre));
+  const productosPendientes = PRODUCTOS_SHOPIFY.filter(
+    (p) => !nombresExistentes.has(p.nombre),
+  ).length;
+
   return (
     <div className="space-y-5">
       <TituloPagina
         titulo="Catálogo"
         descripcion="Costes, precios y márgenes de cada producto, con los avisos que hay que corregir."
       />
+
+      <BotonImportarProductos pendientes={productosPendientes} />
 
       <CalculadoraPrecios margenObjetivo={margenObjetivo} moneda={moneda} />
 

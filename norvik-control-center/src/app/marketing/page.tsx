@@ -10,6 +10,7 @@ import {
   crearContenido,
 } from "@/actions/marketing";
 import { Metrica, TituloPagina, Vacio } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import {
   ESTADOS_CONTENIDO,
@@ -23,6 +24,7 @@ import { decimal, dinero, fechaCorta, valorInputFecha } from "@/lib/formato";
 export const dynamic = "force-dynamic";
 
 export default async function PaginaMarketing() {
+  await asegurarDatosIniciales();
   const [contenidos, campanas, codigos, ajustes] = await Promise.all([
     prisma.contenidoSocial.findMany({ orderBy: { fecha: "asc" } }),
     prisma.campana.findMany({ orderBy: { fechaInicio: "desc" } }),

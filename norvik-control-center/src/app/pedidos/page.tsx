@@ -10,6 +10,7 @@ import {
   crearTareaDiaria,
 } from "@/actions/tareas";
 import { Metrica, TituloPagina, Vacio } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import {
   claveDia,
@@ -25,6 +26,7 @@ export default async function PaginaPedidos(props: {
   searchParams: Promise<{ duplicado?: string }>;
 }) {
   const { duplicado } = await props.searchParams;
+  await asegurarDatosIniciales();
   const hoy = claveDia();
   const [pedidos, ajustes, diarias, registros] = await Promise.all([
     prisma.pedido.findMany({ orderBy: { fecha: "desc" } }),

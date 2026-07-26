@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { PRODUCTOS_SHOPIFY } from "@/lib/sincronizacion";
 
 function refrescar() {
   revalidatePath("/");
@@ -45,4 +46,36 @@ export async function actualizarProducto(formData: FormData) {
 export async function borrarProducto(formData: FormData) {
   await prisma.producto.delete({ where: { id: Number(formData.get("id")) } });
   refrescar();
+}
+
+/**
+ * Añade los productos activos de Shopify que aún no estén en el catálogo
+ * local (comparando por nombre). No toca los que ya existan, así que se
+ * puede pulsar varias veces sin duplicar filas.
+ */
+export async function importarProductosShopify() {
+  const existentes = new Set(
+    (await prisma.producto.findMany({ select: { nombre: true } })).map(
+      (p) => p.nombre,
+    ),
+  );
+  const nuevos = PRODUCTOS_SHOPIFY.filter((p) => !existentes.has(p.nombre));
+  if (nuevos.length > 0) {
+    await prisma.producto.createMany({
+      data: nuevos.map((p) => ({
+        nombre: p.nombre,
+        precioVenta: p.precioVenta,
+        costeTrendsi: p.costeTrendsi,
+        stock: p.stock,
+        estado: "activo",
+        urlShopify: p.urlShopify,
+        notas:
+          p.costeTrendsi === 0
+            ? "Falta el coste de Trendsi: Shopify no lo tenía registrado."
+            : "",
+      })),
+    });
+  }
+  refrescar();
+  return nuevos.length;
 }
