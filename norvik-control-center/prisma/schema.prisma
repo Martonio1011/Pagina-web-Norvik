@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Checklist maestro de la tienda.
+model Tarea {
+  id            Int       @id @default(autoincrement())
+  titulo        String
+  descripcion   String    @default("")
+  /// Array JSON de pasos numerados, tipo tutorial.
+  pasos         String    @default("[]")
+  /// 1 = bloquea ventas ... 4 = legal / largo plazo.
+  prioridad     Int       @default(2)
+  area          String
+  estado        String    @default("pendiente")
+  fechaLimite   DateTime?
+  notas         String    @default("")
+  orden         Int       @default(0)
+  creadaEn      DateTime  @default(now())
+  actualizadaEn DateTime  @updatedAt
+
+  @@index([estado, prioridad, orden])
+}
+
+model Producto {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  costeTrendsi    Float    @default(0)
+  costeEnvio      Float    @default(0)
+  precioVenta     Float    @default(0)
+  stock           Int      @default(0)
+  estado          String   @default("activo")
+  urlTrendsi      String   @default("")
+  urlShopify      String   @default("")
+  tieneGuiaTallas Boolean  @default(false)
+  tieneResenas    Boolean  @default(false)
+  notas           String   @default("")
+  creadoEn        DateTime @default(now())
+  actualizadoEn   DateTime @updatedAt
+}
+
+model Pedido {
+  id            Int      @id @default(autoincrement())
+  numeroPedido  String   @unique
+  cliente       String   @default("")
+  producto      String   @default("")
+  fecha         DateTime @default(now())
+  /// pagado | comprado_trendsi | enviado | tracking_enviado | entregado
+  estadoFlujo   String   @default("pagado")
+  tracking      String   @default("")
+  ingreso       Float    @default(0)
+  costeReal     Float    @default(0)
+  notas         String   @default("")
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@index([fecha])
+}
+
+/// Plantilla del checklist diario de operaciones.
+model TareaDiaria {
+  id        Int              @id @default(autoincrement())
+  titulo    String
+  detalle   String           @default("")
+  orden     Int              @default(0)
+  activa    Boolean          @default(true)
+  registros RegistroDiario[]
+}
+
+/// Marca de completado de una tarea diaria en un dia concreto (YYYY-MM-DD).
+model RegistroDiario {
+  id            Int         @id @default(autoincrement())
+  dia           String
+  tareaDiaria   TareaDiaria @relation(fields: [tareaDiariaId], references: [id], onDelete: Cascade)
+  tareaDiariaId Int
+  hecha         Boolean     @default(false)
+
+  @@unique([dia, tareaDiariaId])
+  @@index([dia])
+}
+
+model ContenidoSocial {
+  id            Int      @id @default(autoincrement())
+  fecha         DateTime
+  plataforma    String   @default("Instagram")
+  idea          String
+  /// idea | grabado | editado | programado | publicado
+  estado        String   @default("idea")
+  notas         String   @default("")
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@index([fecha])
+}
+
+model Campana {
+  id             Int       @id @default(autoincrement())
+  nombre         String
+  plataforma     String    @default("Meta")
+  presupuestoDia Float     @default(0)
+  fechaInicio    DateTime
+  fechaFin       DateTime?
+  gasto          Float     @default(0)
+  ventas         Float     @default(0)
+  /// activa | pausada | finalizada
+  estado         String    @default("activa")
+  notas          String    @default("")
+  creadoEn       DateTime  @default(now())
+  actualizadoEn  DateTime  @updatedAt
+}
+
+model CodigoDescuento {
+  id            Int       @id @default(autoincrement())
+  codigo        String    @unique
+  descripcion   String    @default("")
+  /// porcentaje | fijo | envio_gratis
+  tipo          String    @default("porcentaje")
+  valor         Float     @default(0)
+  activo        Boolean   @default(true)
+  fechaFin      DateTime?
+  usos          Int       @default(0)
+  creadoEn      DateTime  @default(now())
+  actualizadoEn DateTime  @updatedAt
+}
+
+model Gasto {
+  id            Int      @id @default(autoincrement())
+  fecha         DateTime @default(now())
+  /// plataforma | dominio | apps | ads | otros
+  categoria     String   @default("otros")
+  concepto      String
+  importe       Float    @default(0)
+  recurrente    Boolean  @default(false)
+  notas         String   @default("")
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@index([fecha])
+}
+
+/// Ajustes globales de la app (fila unica con id = 1).
+model Ajustes {
+  id             Int      @id @default(1)
+  moneda         String   @default("EUR")
+  margenObjetivo Float    @default(65)
+  dominioShopify String   @default("norviik.myshopify.com")
+  actualizadoEn  DateTime @updatedAt
+}

@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tinta: #16151a;
+  --color-tinta-suave: #5b5966;
+  --color-lienzo: #f6f5f3;
+  --color-borde: #e4e1dc;
+  --color-marca: #8c6a58;
+  --color-marca-suave: #f0e7e2;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-lienzo);
+  color: var(--color-tinta);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+@layer components {
+  .tarjeta {
+    @apply rounded-2xl border border-[var(--color-borde)] bg-white p-4 sm:p-5;
+  }
+
+  .campo {
+    @apply w-full rounded-lg border border-[var(--color-borde)] bg-white px-3 py-2 text-sm
+      outline-none focus:border-[var(--color-marca)] focus:ring-2 focus:ring-[var(--color-marca-suave)];
+  }
+
+  .etiqueta {
+    @apply mb-1 block text-xs font-medium text-[var(--color-tinta-suave)];
+  }
+
+  .boton {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--color-marca)] px-3.5 py-2
+      text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50;
+  }
+
+  .boton-suave {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-[var(--color-borde)]
+      bg-white px-3 py-2 text-sm font-medium text-[var(--color-tinta)] transition hover:bg-[var(--color-lienzo)]
+      disabled:opacity-50;
+  }
+
+  .insignia {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap;
+  }
+}
