@@ -1,0 +1,177 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-campaign",
+      "settings": {
+        "height": "large",
+        "alignment": "left",
+        "overlay": 40,
+        "eyebrow": "New season",
+        "heading": "Dresses made for warm nights",
+        "subheading": "Maxi, mini and everything in between for the summer ahead.",
+        "cta_label": "Shop dresses",
+        "cta_link": "shopify://collections/dresses",
+        "cta2_label": "Resort wear",
+        "cta2_link": "shopify://collections/resort-wear"
+      }
+    },
+    "pills": {
+      "type": "category-pills",
+      "blocks": {
+        "dresses": {
+          "type": "pill",
+          "settings": { "collection": "dresses", "label": "Dresses" }
+        },
+        "resort": {
+          "type": "pill",
+          "settings": { "collection": "resort-wear", "label": "Resort wear" }
+        },
+        "accessories": {
+          "type": "pill",
+          "settings": { "collection": "accessories", "label": "Jewellery & bags" }
+        },
+        "all": {
+          "type": "pill",
+          "settings": { "label": "Shop all", "link": "/collections/all" }
+        }
+      },
+      "block_order": ["dresses", "resort", "accessories", "all"],
+      "settings": {
+        "heading": "Shop by category",
+        "style": "visual",
+        "padding_top": 48,
+        "padding_bottom": 8
+      }
+    },
+    "best_sellers": {
+      "type": "best-sellers-quickadd",
+      "settings": {
+        "eyebrow": "Loved right now",
+        "heading": "Best sellers",
+        "collection": "dresses",
+        "products_to_show": 8,
+        "layout": "rail",
+        "columns": "4",
+        "show_view_all": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "editorial": {
+      "type": "editorial-grid",
+      "blocks": {
+        "vacation": {
+          "type": "look",
+          "settings": {
+            "title": "Vacation",
+            "cta": "Shop resort wear",
+            "collection": "resort-wear"
+          }
+        },
+        "wedding": {
+          "type": "look",
+          "settings": {
+            "title": "Wedding guest",
+            "cta": "Shop maxi dresses",
+            "collection": "dresses"
+          }
+        },
+        "weekend": {
+          "type": "look",
+          "settings": {
+            "title": "Weekend",
+            "cta": "Shop everyday",
+            "link": "/collections/all"
+          }
+        },
+        "date": {
+          "type": "look",
+          "settings": {
+            "title": "Date night",
+            "cta": "Shop mini dresses",
+            "collection": "dresses"
+          }
+        }
+      },
+      "block_order": ["vacation", "wedding", "weekend", "date"],
+      "settings": {
+        "eyebrow": "Where are you going?",
+        "heading": "Shop the occasion",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "ugc": {
+      "type": "ugc-carousel",
+      "settings": {
+        "eyebrow": "@norvik",
+        "heading": "As worn by you",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "incentives": {
+      "type": "incentive-bar",
+      "blocks": {
+        "shipping": {
+          "type": "item",
+          "settings": {
+            "title": "Free shipping",
+            "text": "On every order over {{ threshold }}."
+          }
+        },
+        "welcome": {
+          "type": "item",
+          "settings": {
+            "title": "15% off your first order",
+            "text": "Join the list and we'll send your code."
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "title": "Easy returns",
+            "text": "30 days to change your mind."
+          }
+        }
+      },
+      "block_order": ["shipping", "welcome", "returns"],
+      "settings": {
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": { "heading": "Be first to know" }
+        },
+        "paragraph": {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>New arrivals, restocks and the occasional 15% off. Nothing else.</p>"
+          }
+        },
+        "email_form": { "type": "email_form", "settings": {} }
+      },
+      "block_order": ["heading", "paragraph", "email_form"],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "pills",
+    "best_sellers",
+    "editorial",
+    "ugc",
+    "incentives",
+    "newsletter"
+  ]
+}

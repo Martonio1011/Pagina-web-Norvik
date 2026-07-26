@@ -1,0 +1,917 @@
+/* ==========================================================================
+   NORVIK — design tokens and components
+   Layered on top of Dawn. Nothing here is hardcoded per page: colours,
+   spacing and radii come from CSS custom properties so the theme editor
+   settings can override them at runtime (see snippets/norvik-vars.liquid).
+   ========================================================================== */
+
+:root {
+  /* Neutral base — shared by both accent options */
+  --nv-bone: #faf8f5;
+  --nv-ink: #1a1a1a;
+  --nv-ink-soft: #6b6862;
+  --nv-line: #e6e0d8;
+  --nv-white: #fff;
+
+  /* Accent is injected from theme settings; these are the fallbacks.
+     Option A "Terracotta" #c66a4e — warmer, more editorial.
+     Option B "Golden sand" #c9a227 — sunnier, more resort.
+     Active option is chosen in Theme settings → Norvik → Accent colour. */
+  --nv-accent: #c66a4e;
+  --nv-accent-soft: #f6ece7;
+  --nv-accent-ink: #fff;
+
+  /* Type scale */
+  --nv-display: clamp(2.25rem, 6vw, 4.5rem);
+  --nv-h2: clamp(1.5rem, 3vw, 2.25rem);
+  --nv-radius: 0;
+  --nv-radius-pill: 999px;
+
+  /* Motion — respected globally, see prefers-reduced-motion below */
+  --nv-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Typography helpers
+   Headings use the heading font picked in theme settings, condensed + upper.
+   The serif italic accent is reserved for editorial eyebrow labels only.
+   -------------------------------------------------------------------------- */
+
+.nv-display,
+.nv-h2 {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.nv-display {
+  font-size: var(--nv-display);
+}
+.nv-h2 {
+  font-size: var(--nv-h2);
+}
+
+.nv-eyebrow {
+  font-family: var(--font-body-family);
+  font-style: italic;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+  color: var(--nv-ink-soft);
+  margin: 0 0 0.5rem;
+}
+
+.nv-section {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.nv-wrap {
+  max-width: 1400px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 750px) {
+  .nv-wrap {
+    padding-inline: 2.5rem;
+  }
+}
+
+.nv-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.nv-head__link {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.nv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 2rem;
+  border: 1px solid var(--nv-ink);
+  background: var(--nv-ink);
+  color: var(--nv-white);
+  font-family: var(--font-heading-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s var(--nv-ease), color 0.2s var(--nv-ease);
+}
+.nv-btn:hover {
+  background: var(--nv-accent);
+  border-color: var(--nv-accent);
+  color: var(--nv-accent-ink);
+}
+.nv-btn--ghost {
+  background: transparent;
+  color: var(--nv-ink);
+}
+.nv-btn--ghost:hover {
+  background: var(--nv-ink);
+  color: var(--nv-white);
+  border-color: var(--nv-ink);
+}
+.nv-btn--light {
+  background: var(--nv-white);
+  border-color: var(--nv-white);
+  color: var(--nv-ink);
+}
+.nv-btn--full {
+  width: 100%;
+}
+.nv-btn[disabled],
+.nv-btn[aria-disabled='true'] {
+  background: var(--nv-line);
+  border-color: var(--nv-line);
+  color: var(--nv-ink-soft);
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   1. Hero campaign
+   -------------------------------------------------------------------------- */
+
+.nv-hero {
+  position: relative;
+  display: grid;
+  isolation: isolate;
+}
+.nv-hero__media,
+.nv-hero__media img,
+.nv-hero__media svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.nv-hero__scrim {
+  grid-area: 1 / 1;
+  background: linear-gradient(180deg, rgb(0 0 0 / 10%) 0%, rgb(0 0 0 / 45%) 100%);
+}
+.nv-hero__inner {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  color: var(--nv-white);
+  max-width: 46rem;
+}
+.nv-hero__inner .nv-eyebrow {
+  color: rgb(255 255 255 / 85%);
+}
+.nv-hero__sub {
+  margin: 0.75rem 0 1.5rem;
+  font-size: 1.0625rem;
+  max-width: 34rem;
+  color: rgb(255 255 255 / 90%);
+}
+.nv-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.nv-hero--center .nv-hero__inner {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  max-width: none;
+}
+.nv-hero--center .nv-hero__ctas {
+  justify-content: center;
+}
+
+/* Height options set from the section schema */
+.nv-hero[data-height='medium'] {
+  min-height: 60svh;
+}
+.nv-hero[data-height='large'] {
+  min-height: 78svh;
+}
+.nv-hero[data-height='full'] {
+  min-height: calc(100svh - 6rem);
+}
+
+/* --------------------------------------------------------------------------
+   2. Category pills
+   -------------------------------------------------------------------------- */
+
+.nv-pills {
+  display: flex;
+  gap: 0.625rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+  scroll-snap-type: x proximity;
+}
+.nv-pills::-webkit-scrollbar {
+  display: none;
+}
+.nv-pill {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6875rem 1.25rem;
+  border: 1px solid var(--nv-line);
+  border-radius: var(--nv-radius-pill);
+  background: var(--nv-white);
+  color: var(--nv-ink);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s var(--nv-ease), background 0.2s var(--nv-ease);
+}
+.nv-pill:hover,
+.nv-pill[aria-current='page'] {
+  border-color: var(--nv-ink);
+  background: var(--nv-ink);
+  color: var(--nv-white);
+}
+.nv-pill__thumb {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: -0.5rem;
+}
+
+/* Pills with images stack as a scrollable row of circles on mobile */
+.nv-pills--visual {
+  gap: 1.25rem;
+}
+.nv-pills--visual .nv-pill {
+  flex-direction: column;
+  border: 0;
+  padding: 0;
+  background: none;
+  gap: 0.625rem;
+  width: 5.5rem;
+}
+.nv-pills--visual .nv-pill:hover {
+  background: none;
+  color: var(--nv-ink);
+}
+.nv-pills--visual .nv-pill__thumb {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0;
+  border: 1px solid var(--nv-line);
+  transition: border-color 0.2s var(--nv-ease);
+}
+.nv-pills--visual .nv-pill:hover .nv-pill__thumb {
+  border-color: var(--nv-ink);
+}
+.nv-pills--visual .nv-pill span {
+  font-size: 0.75rem;
+  text-align: center;
+  line-height: 1.2;
+}
+@media (min-width: 750px) {
+  .nv-pills--visual .nv-pill {
+    width: 7rem;
+  }
+  .nv-pills--visual .nv-pill__thumb {
+    width: 7rem;
+    height: 7rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Product card (shared by best sellers, collection grid, cross-sell)
+   -------------------------------------------------------------------------- */
+
+.nv-grid {
+  display: grid;
+  gap: 1rem 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 990px) {
+  .nv-grid[data-cols='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .nv-grid[data-cols='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .nv-grid {
+    gap: 2rem 1.25rem;
+  }
+}
+
+.nv-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.nv-card__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--nv-bone);
+  aspect-ratio: 2 / 3;
+}
+.nv-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.35s var(--nv-ease);
+}
+.nv-card__img--alt {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+@media (hover: hover) {
+  .nv-card__media:hover .nv-card__img--alt {
+    opacity: 1;
+  }
+}
+.nv-card__body {
+  padding: 0.75rem 0 0;
+}
+.nv-card__title {
+  font-size: 0.875rem;
+  line-height: 1.35;
+  margin: 0 0 0.25rem;
+  font-weight: 400;
+}
+.nv-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.nv-card__title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.nv-card__price {
+  font-size: 0.875rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.nv-card__price del {
+  color: var(--nv-ink-soft);
+}
+.nv-card__price ins {
+  text-decoration: none;
+  color: var(--nv-accent);
+}
+
+/* Discount + sold-out badges */
+.nv-badge {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  z-index: 2;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--nv-accent);
+  color: var(--nv-accent-ink);
+}
+.nv-badge--muted {
+  background: var(--nv-ink);
+  color: var(--nv-white);
+}
+
+/* Colour swatches under the card */
+.nv-swatches {
+  display: flex;
+  gap: 0.3125rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.nv-swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  border: 1px solid var(--nv-line);
+  background-size: cover;
+  background-position: center;
+}
+.nv-swatches__more {
+  font-size: 0.6875rem;
+  color: var(--nv-ink-soft);
+  align-self: center;
+}
+
+/* --------------------------------------------------------------------------
+   Wishlist heart
+   -------------------------------------------------------------------------- */
+
+.nv-wish {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 85%);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s var(--nv-ease), transform 0.2s var(--nv-ease);
+}
+.nv-wish:hover {
+  background: var(--nv-white);
+  transform: scale(1.06);
+}
+.nv-wish svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: var(--nv-ink);
+  stroke-width: 1.5;
+  transition: fill 0.2s var(--nv-ease), stroke 0.2s var(--nv-ease);
+}
+.nv-wish[aria-pressed='true'] svg {
+  fill: var(--nv-accent);
+  stroke: var(--nv-accent);
+}
+/* Static placement inside the product page, not floating over an image */
+.nv-wish--inline {
+  position: static;
+  background: transparent;
+  backdrop-filter: none;
+  width: auto;
+  gap: 0.5rem;
+  grid-auto-flow: column;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nv-wish--inline:hover {
+  background: transparent;
+  transform: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Quick add
+   -------------------------------------------------------------------------- */
+
+.nv-quick {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition: opacity 0.25s var(--nv-ease), transform 0.25s var(--nv-ease);
+}
+@media (hover: hover) {
+  .nv-card:hover .nv-quick,
+  .nv-quick:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* On touch devices hover never fires, so the control is always visible */
+@media (hover: none) {
+  .nv-quick {
+    opacity: 1;
+    transform: none;
+  }
+}
+.nv-quick__toggle {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 0;
+  background: var(--nv-white);
+  color: var(--nv-ink);
+  font-family: var(--font-heading-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.nv-quick__toggle:hover {
+  background: var(--nv-ink);
+  color: var(--nv-white);
+}
+.nv-quick__sizes {
+  display: none;
+  background: var(--nv-white);
+  padding: 0.5rem;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.nv-quick.is-open .nv-quick__sizes {
+  display: flex;
+}
+.nv-quick.is-open .nv-quick__toggle {
+  display: none;
+}
+.nv-size {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0 0.375rem;
+  border: 1px solid var(--nv-line);
+  background: var(--nv-white);
+  font-size: 0.75rem;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s var(--nv-ease);
+}
+.nv-size:hover:not([disabled]) {
+  border-color: var(--nv-ink);
+}
+.nv-size[aria-pressed='true'] {
+  background: var(--nv-ink);
+  border-color: var(--nv-ink);
+  color: var(--nv-white);
+}
+/* Sold-out sizes stay visible and struck through, never hidden */
+.nv-size[disabled] {
+  color: var(--nv-ink-soft);
+  cursor: not-allowed;
+  overflow: hidden;
+}
+.nv-size[disabled]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top left,
+    transparent calc(50% - 0.5px),
+    currentColor calc(50% - 0.5px),
+    currentColor calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+  opacity: 0.55;
+}
+
+/* --------------------------------------------------------------------------
+   Horizontal scroller (best sellers, cross-sell, UGC)
+   -------------------------------------------------------------------------- */
+
+.nv-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 60%;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+.nv-rail::-webkit-scrollbar {
+  display: none;
+}
+.nv-rail > * {
+  scroll-snap-align: start;
+}
+@media (min-width: 750px) {
+  .nv-rail {
+    grid-auto-columns: 32%;
+    gap: 1.25rem;
+  }
+}
+@media (min-width: 990px) {
+  .nv-rail {
+    grid-auto-columns: 23%;
+  }
+}
+.nv-rail-nav {
+  display: none;
+  gap: 0.5rem;
+}
+@media (min-width: 990px) {
+  .nv-rail-nav {
+    display: flex;
+  }
+}
+.nv-rail-nav button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--nv-line);
+  background: var(--nv-white);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.nv-rail-nav button:hover:not([disabled]) {
+  border-color: var(--nv-ink);
+}
+.nv-rail-nav button[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   4. Editorial grid
+   -------------------------------------------------------------------------- */
+
+.nv-editorial {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 990px) {
+  .nv-editorial {
+    gap: 1.25rem;
+  }
+}
+.nv-editorial__item {
+  position: relative;
+  display: grid;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 14rem;
+  text-decoration: none;
+}
+@media (min-width: 750px) {
+  .nv-editorial__item {
+    min-height: 22rem;
+  }
+}
+.nv-editorial__item img,
+.nv-editorial__item svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--nv-ease);
+}
+.nv-editorial__item:hover img {
+  transform: scale(1.04);
+}
+.nv-editorial__scrim {
+  grid-area: 1 / 1;
+  background: linear-gradient(180deg, rgb(0 0 0 / 5%) 40%, rgb(0 0 0 / 55%) 100%);
+}
+.nv-editorial__label {
+  grid-area: 1 / 1;
+  align-self: end;
+  padding: 1rem;
+  color: var(--nv-white);
+}
+.nv-editorial__label strong {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.nv-editorial__label span {
+  font-size: 0.8125rem;
+  opacity: 0.9;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   5. UGC carousel
+   -------------------------------------------------------------------------- */
+
+.nv-ugc__item {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  background: var(--nv-bone);
+  overflow: hidden;
+}
+.nv-ugc__item img,
+.nv-ugc__item svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nv-ugc__handle {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  color: var(--nv-white);
+  font-size: 0.75rem;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 45%);
+}
+.nv-ugc__empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--nv-ink-soft);
+  border: 1px dashed var(--nv-line);
+}
+
+/* --------------------------------------------------------------------------
+   6. Incentive bar
+   -------------------------------------------------------------------------- */
+
+.nv-incentives {
+  display: grid;
+  gap: 1px;
+  background: var(--nv-line);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 750px) {
+  .nv-incentives[data-count='2'] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .nv-incentives[data-count='3'] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .nv-incentives[data-count='4'] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.nv-incentive {
+  background: var(--nv-bone);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+}
+.nv-incentive strong {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.nv-incentive p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nv-ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Email popup
+   -------------------------------------------------------------------------- */
+
+.nv-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 45%);
+}
+.nv-popup[open],
+.nv-popup.is-open {
+  display: grid;
+}
+.nv-popup__box {
+  position: relative;
+  width: min(46rem, 100%);
+  background: var(--nv-white);
+  display: grid;
+  grid-template-columns: 1fr;
+  max-height: 92svh;
+  overflow: auto;
+}
+@media (min-width: 750px) {
+  .nv-popup__box--split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.nv-popup__media {
+  display: none;
+}
+@media (min-width: 750px) {
+  .nv-popup__media {
+    display: block;
+  }
+  .nv-popup__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+.nv-popup__body {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+.nv-popup__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  background: rgb(255 255 255 / 80%);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.nv-popup__close:hover {
+  background: var(--nv-bone);
+}
+.nv-popup form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.nv-popup input[type='email'] {
+  flex: 1 1 12rem;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border: 1px solid var(--nv-line);
+  font-size: 1rem;
+  background: var(--nv-white);
+  color: var(--nv-ink);
+}
+.nv-popup input[type='email']:focus {
+  outline: 2px solid var(--nv-ink);
+  outline-offset: -2px;
+}
+.nv-popup__fine {
+  font-size: 0.75rem;
+  color: var(--nv-ink-soft);
+  margin: 0.75rem 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   Free shipping progress (used in the cart drawer)
+   -------------------------------------------------------------------------- */
+
+.nv-ship {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--nv-line);
+  background: var(--nv-bone);
+}
+.nv-ship__text {
+  font-size: 0.8125rem;
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+.nv-ship__text b {
+  color: var(--nv-accent);
+}
+.nv-ship__track {
+  height: 0.25rem;
+  background: var(--nv-line);
+  overflow: hidden;
+}
+.nv-ship__fill {
+  height: 100%;
+  background: var(--nv-accent);
+  transition: width 0.4s var(--nv-ease);
+}
+.nv-ship--done .nv-ship__fill {
+  background: #2e7d32;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility / motion
+   -------------------------------------------------------------------------- */
+
+.nv-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nv-card__img,
+  .nv-editorial__item img,
+  .nv-quick,
+  .nv-ship__fill,
+  .nv-wish {
+    transition: none !important;
+  }
+  .nv-editorial__item:hover img {
+    transform: none;
+  }
+}

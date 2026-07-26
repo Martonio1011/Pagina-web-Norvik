@@ -1,0 +1,182 @@
+{%- comment -%}
+  Norvik product card — used by best sellers, the collection grid and
+  cross-sell rails so the hover, quick add and wishlist behave identically
+  everywhere.
+
+  Accepts:
+    product      - required
+    show_quick   - boolean, render the quick add control (default true)
+    show_swatch  - boolean, render colour swatches (default true)
+    sizes        - max swatches before "+N" (default 4)
+    loading      - 'lazy' (default) or 'eager' for above-the-fold cards
+{%- endcomment -%}
+{%- liquid
+  assign show_quick = show_quick | default: true, allow_false: true
+  assign show_swatch = show_swatch | default: true, allow_false: true
+  assign swatch_limit = swatch_limit | default: 4
+  assign img_loading = loading | default: 'lazy'
+
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+    assign saving = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+  endif
+
+  comment
+    Locate the size-like option so quick add can offer real choices.
+    Falls back to a plain link when the product has no size dimension.
+  endcomment
+  assign size_option = nil
+  assign size_position = 0
+  for opt in product.options_with_values
+    assign opt_name = opt.name | downcase
+    if opt_name contains 'size' or opt_name contains 'talla'
+      assign size_option = opt
+      assign size_position = forloop.index
+      break
+    endif
+  endfor
+
+  assign colour_option = nil
+  for opt in product.options_with_values
+    assign opt_name = opt.name | downcase
+    if opt_name contains 'color' or opt_name contains 'colour'
+      assign colour_option = opt
+      break
+    endif
+  endfor
+-%}
+
+<div class="nv-card">
+  <div class="nv-card__media">
+    {%- if on_sale -%}
+      <span class="nv-badge">{{ saving }}% {{ 'norvik.card.off' | t: default: 'off' }}</span>
+    {%- elsif product.available == false -%}
+      <span class="nv-badge nv-badge--muted">{{ 'norvik.card.sold_out' | t: default: 'Sold out' }}</span>
+    {%- endif -%}
+
+    {% render 'wishlist-button', product: product %}
+
+    <a href="{{ product.url }}" tabindex="-1" aria-hidden="true" class="nv-card__media-link">
+      {%- if product.featured_media -%}
+        {{
+          product.featured_media
+          | image_url: width: 800
+          | image_tag:
+            loading: img_loading,
+            widths: '200,300,400,500,600,700,800',
+            sizes: '(min-width: 990px) 25vw, 50vw',
+            class: 'nv-card__img',
+            alt: product.featured_media.alt
+        }}
+      {%- else -%}
+        {{ 'product-apparel-1' | placeholder_svg_tag: 'nv-card__img' }}
+      {%- endif -%}
+
+      {%- comment -%} Second image swaps in on hover — only when one exists. {%- endcomment -%}
+      {%- if product.media[1] -%}
+        {{
+          product.media[1]
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            widths: '200,300,400,500,600,700,800',
+            sizes: '(min-width: 990px) 25vw, 50vw',
+            class: 'nv-card__img nv-card__img--alt',
+            alt: ''
+        }}
+      {%- endif -%}
+    </a>
+
+    {%- if show_quick and product.available -%}
+      {%- if product.has_only_default_variant -%}
+        <div class="nv-quick" data-nv-quick>
+          <button
+            type="button"
+            class="nv-quick__toggle"
+            data-nv-quick-single="{{ product.selected_or_first_available_variant.id }}"
+          >
+            {{ 'norvik.card.quick_add' | t: default: 'Quick add' }}
+          </button>
+        </div>
+      {%- elsif size_option -%}
+        <div class="nv-quick" data-nv-quick>
+          <button type="button" class="nv-quick__toggle" data-nv-quick-toggle>
+            {{ 'norvik.card.quick_add' | t: default: 'Quick add' }}
+          </button>
+          <div class="nv-quick__sizes" role="group" aria-label="{{ 'norvik.card.pick_size' | t: default: 'Pick a size' }}">
+            {%- for value in size_option.values -%}
+              {%- liquid
+                assign match_id = 0
+                assign match_available = false
+                for variant in product.variants
+                  case size_position
+                    when 1
+                      assign variant_value = variant.option1
+                    when 2
+                      assign variant_value = variant.option2
+                    else
+                      assign variant_value = variant.option3
+                  endcase
+                  if variant_value == value
+                    if match_id == 0
+                      assign match_id = variant.id
+                    endif
+                    if variant.available and match_available == false
+                      assign match_id = variant.id
+                      assign match_available = true
+                    endif
+                  endif
+                endfor
+              -%}
+              <button
+                type="button"
+                class="nv-size"
+                data-nv-variant="{{ match_id }}"
+                {% unless match_available %}disabled aria-label="{{ value }} — {{ 'norvik.card.sold_out' | t: default: 'Sold out' }}"{% endunless %}
+              >
+                {{ value }}
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  <div class="nv-card__body">
+    <h3 class="nv-card__title"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+    <p class="nv-card__price">
+      {%- if on_sale -%}
+        <ins>{{ product.price | money }}</ins>
+        <del>{{ product.compare_at_price | money }}</del>
+      {%- else -%}
+        <span>{{ product.price | money }}</span>
+      {%- endif -%}
+    </p>
+
+    {%- if show_swatch and colour_option -%}
+      <div class="nv-swatches">
+        {%- for value in colour_option.values limit: swatch_limit -%}
+          {%- if value.swatch.image -%}
+            <span
+              class="nv-swatch"
+              style="background-image:url({{ value.swatch.image | image_url: width: 40 }})"
+              title="{{ value }}"
+            ></span>
+          {%- else -%}
+            <span
+              class="nv-swatch"
+              style="background-color:{{ value.swatch.color | default: value | downcase | replace: ' ', '' }}"
+              title="{{ value }}"
+            ></span>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if colour_option.values.size > swatch_limit -%}
+          {%- assign extra = colour_option.values.size | minus: swatch_limit -%}
+          <span class="nv-swatches__more">+{{ extra }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>

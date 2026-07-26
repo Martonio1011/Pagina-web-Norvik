@@ -1,0 +1,103 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign collection = section.settings.collection
+  assign limit = section.settings.products_to_show
+  assign rail_id = 'nv-rail-' | append: section.id
+-%}
+
+<section class="nv-section" style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px">
+  <div class="nv-wrap">
+    <div class="nv-head">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="nv-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="nv-h2">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+      </div>
+
+      <div style="display:flex;align-items:center;gap:1rem">
+        {%- if section.settings.layout == 'rail' -%}
+          <div class="nv-rail-nav" data-nv-rail-nav="{{ rail_id }}">
+            <button type="button" data-nv-rail-prev aria-label="{{ 'norvik.rail.previous' | t: default: 'Previous' }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button type="button" data-nv-rail-next aria-label="{{ 'norvik.rail.next' | t: default: 'Next' }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        {%- endif -%}
+        {%- if section.settings.show_view_all and collection != blank -%}
+          <a href="{{ collection.url }}" class="nv-head__link">{{ 'norvik.view_all' | t: default: 'View all' }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if collection != blank and collection.products_count > 0 -%}
+      {%- if section.settings.layout == 'rail' -%}
+        <div class="nv-rail" id="{{ rail_id }}">
+          {%- for product in collection.products limit: limit -%}
+            {% render 'norvik-card', product: product %}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="nv-grid" data-cols="{{ section.settings.columns }}">
+          {%- for product in collection.products limit: limit -%}
+            {% render 'norvik-card', product: product %}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="nv-grid" data-cols="{{ section.settings.columns }}">
+        {%- for i in (1..4) -%}
+          <div class="nv-card">
+            <div class="nv-card__media">{{ 'product-apparel-' | append: i | placeholder_svg_tag: 'nv-card__img' }}</div>
+            <div class="nv-card__body">
+              <h3 class="nv-card__title">{{ 'norvik.placeholder.product' | t: default: 'Product name' }}</h3>
+              <p class="nv-card__price">$00.00</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Best sellers",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Loved right now" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Best sellers" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "products_to_show", "label": "Products", "min": 2, "max": 16, "step": 1, "default": 8 },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "rail",
+      "options": [
+        { "value": "rail", "label": "Carousel" },
+        { "value": "grid", "label": "Grid" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Grid columns on desktop",
+      "default": "4",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show \"View all\" link", "default": true },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "presets": [{ "name": "Best sellers" }]
+}
+{% endschema %}

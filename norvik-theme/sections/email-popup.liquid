@@ -1,0 +1,119 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.enabled -%}
+  <div
+    class="nv-popup"
+    data-nv-popup
+    data-nv-popup-delay="{{ section.settings.delay }}"
+    data-nv-popup-scroll="{{ section.settings.scroll_percent }}"
+    data-nv-popup-version="{{ section.settings.version }}"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="nv-popup-title"
+    hidden
+  >
+    <div class="nv-popup__box{% if section.settings.image != blank %} nv-popup__box--split{% endif %}">
+      <button type="button" class="nv-popup__close" data-nv-popup-close aria-label="{{ 'norvik.popup.close' | t: default: 'Close' }}">
+        &times;
+      </button>
+
+      {%- if section.settings.image != blank -%}
+        <div class="nv-popup__media">
+          {{
+            section.settings.image
+            | image_url: width: 800
+            | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '(min-width: 750px) 23rem, 100vw', alt: ''
+          }}
+        </div>
+      {%- endif -%}
+
+      <div class="nv-popup__body">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="nv-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="nv-h2" id="nv-popup-title">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.body != blank -%}
+          <p style="margin:.75rem 0 0;font-size:.9375rem">{{ section.settings.body | escape }}</p>
+        {%- endif -%}
+
+        {%- form 'customer', id: 'norvik-email-popup', class: 'nv-popup__form' -%}
+          <input type="hidden" name="contact[tags]" value="{{ section.settings.tag }}">
+          <input type="hidden" name="contact[accepts_marketing]" value="true">
+          <label class="nv-visually-hidden" for="nv-popup-email">
+            {{ 'norvik.popup.email' | t: default: 'Email address' }}
+          </label>
+          <input
+            type="email"
+            id="nv-popup-email"
+            name="contact[email]"
+            placeholder="{{ 'norvik.popup.placeholder' | t: default: 'Your email' }}"
+            required
+            autocomplete="email"
+          >
+          <button type="submit" class="nv-btn">{{ section.settings.button | escape }}</button>
+
+          {%- if form.posted_successfully? -%}
+            <p class="nv-popup__fine" role="status">{{ section.settings.success | escape }}</p>
+          {%- elsif form.errors -%}
+            <p class="nv-popup__fine" role="alert">{{ form.errors.messages.email }}</p>
+          {%- endif -%}
+        {%- endform -%}
+
+        {%- if section.settings.fine_print != blank -%}
+          <p class="nv-popup__fine">{{ section.settings.fine_print | escape }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Email popup",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "label": "Enable popup", "default": true },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Show after",
+      "min": 3,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "scroll_percent",
+      "label": "…or after scrolling",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "info": "Whichever happens first. Shows once per session."
+    },
+    {
+      "type": "text",
+      "id": "version",
+      "label": "Campaign id",
+      "default": "1",
+      "info": "Change this to show the popup again to people who already dismissed it."
+    },
+    { "type": "header", "content": "Content" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Welcome to Norvik" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "15% off your first order" },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Join the list for early access to new arrivals. We'll send your code straight away."
+    },
+    { "type": "text", "id": "button", "label": "Button", "default": "Get my code" },
+    { "type": "text", "id": "success", "label": "Success message", "default": "You're in. Check your inbox for the code." },
+    { "type": "text", "id": "fine_print", "label": "Fine print", "default": "No spam. Unsubscribe any time." },
+    { "type": "text", "id": "tag", "label": "Customer tag", "default": "popup-15", "info": "Added to the subscriber so you can find them later." }
+  ]
+}
+{% endschema %}

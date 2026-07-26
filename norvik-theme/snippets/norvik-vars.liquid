@@ -1,0 +1,24 @@
+{%- comment -%}
+  Bridges theme settings into CSS custom properties so every Norvik component
+  reacts to the theme editor without any hardcoded colour in the stylesheets.
+{%- endcomment -%}
+{%- liquid
+  assign accent = settings.nv_accent_custom
+  if settings.nv_accent_choice == 'terracotta'
+    assign accent = '#c66a4e'
+    assign accent_soft = '#f6ece7'
+  elsif settings.nv_accent_choice == 'sand'
+    assign accent = '#c9a227'
+    assign accent_soft = '#f7f0da'
+  else
+    assign accent_soft = '#f4f1ec'
+  endif
+-%}
+<style>
+  :root {
+    --nv-accent: {{ accent | default: '#c66a4e' }};
+    --nv-accent-soft: {{ accent_soft | default: '#f6ece7' }};
+    --nv-bone: {{ settings.nv_bone | default: '#faf8f5' }};
+    --nv-ink: {{ settings.nv_ink | default: '#1a1a1a' }};
+  }
+</style>
