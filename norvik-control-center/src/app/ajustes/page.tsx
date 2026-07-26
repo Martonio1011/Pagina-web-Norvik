@@ -1,12 +1,42 @@
+import path from "node:path";
 import { guardarAjustes } from "@/actions/finanzas";
 import { TituloPagina } from "@/components/ui";
+import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
 import { prisma } from "@/lib/db";
 import { ETIQUETA_TABLA, TABLAS } from "@/lib/exportar";
+import { VERSION } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
 
+/** Datos de apoyo por si algún día la app no muestra lo que esperas. */
+async function cargarDiagnostico() {
+  const url = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
+  const relativa = url.replace(/^file:/, "");
+  const [tareas, tareasDiarias, productos, pedidos, gastos] = await Promise.all([
+    prisma.tarea.count(),
+    prisma.tareaDiaria.count(),
+    prisma.producto.count(),
+    prisma.pedido.count(),
+    prisma.gasto.count(),
+  ]);
+  return {
+    ruta: path.resolve(process.cwd(), relativa),
+    conteos: [
+      ["Tareas del checklist", tareas],
+      ["Tareas de la rutina diaria", tareasDiarias],
+      ["Productos", productos],
+      ["Pedidos", pedidos],
+      ["Gastos", gastos],
+    ] as const,
+  };
+}
+
 export default async function PaginaAjustes() {
-  const ajustes = await prisma.ajustes.findUnique({ where: { id: 1 } });
+  await asegurarDatosIniciales();
+  const [ajustes, diagnostico] = await Promise.all([
+    prisma.ajustes.findUnique({ where: { id: 1 } }),
+    cargarDiagnostico(),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -94,13 +124,38 @@ export default async function PaginaAjustes() {
       <section className="tarjeta">
         <h2 className="text-sm font-semibold">Dónde viven tus datos</h2>
         <p className="mt-2 text-sm text-[var(--color-tinta-suave)]">
-          Todo está en el archivo SQLite{" "}
-          <code className="rounded bg-[var(--color-lienzo)] px-1.5 py-0.5 text-xs">
-            prisma/dev.db
-          </code>{" "}
-          dentro de esta carpeta. No sale nada a internet. Para respaldarlo basta
-          con copiar ese archivo o descargar el JSON de arriba.
+          Todo está en un único archivo SQLite dentro de esta carpeta. No sale
+          nada a internet. Para respaldarlo basta con copiar ese archivo o
+          descargar el JSON de arriba.
         </p>
+
+        <dl className="mt-4 space-y-2 text-xs">
+          <div>
+            <dt className="text-[var(--color-tinta-suave)]">
+              Archivo de la base de datos
+            </dt>
+            <dd className="mt-0.5 font-mono break-all">{diagnostico.ruta}</dd>
+          </div>
+          <div>
+            <dt className="text-[var(--color-tinta-suave)]">Versión de la app</dt>
+            <dd className="mt-0.5 font-mono">{VERSION}</dd>
+          </div>
+        </dl>
+
+        <table className="mt-4 w-full text-xs">
+          <tbody className="divide-y divide-[var(--color-borde)]">
+            {diagnostico.conteos.map(([nombre, total]) => (
+              <tr key={nombre}>
+                <td className="py-1.5 text-[var(--color-tinta-suave)]">
+                  {nombre}
+                </td>
+                <td className="py-1.5 text-right font-medium tabular-nums">
+                  {total}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </div>
   );

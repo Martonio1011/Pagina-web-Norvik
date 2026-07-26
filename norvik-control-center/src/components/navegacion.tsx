@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { VERSION } from "@/lib/version";
 
 const ENLACES = [
   { href: "/", etiqueta: "Panel", icono: "◉" },
@@ -27,7 +28,7 @@ export function Navegacion() {
               Norvik
             </span>
             <span className="block text-[11px] text-[var(--color-tinta-suave)]">
-              Control Center
+              Control Center · {VERSION}
             </span>
           </Link>
           <nav className="hidden flex-1 items-center justify-end gap-1 sm:flex">
