@@ -16,6 +16,10 @@ Si no lo tienes, el propio lanzador te lo dirá.
 
 Para cerrar la app, cierra la ventana negra.
 
+Para traerte la última versión del código, doble clic en
+**`Actualizar Norvik.bat`** con la app cerrada. Descarga y reemplaza los
+archivos sin tocar `prisma/dev.db`, así que no pierdes tareas ni pedidos.
+
 ## Arrancarla a mano
 
 Desde esta carpeta (`norvik-control-center`):

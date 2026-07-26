@@ -11,6 +11,12 @@ echo.
 where node >nul 2>nul
 if errorlevel 1 goto sin_node
 
+rem Si algo ya responde en el puerto 3000 es una ventana anterior todavia
+rem abierta. Seguir arrancaria una segunda copia en otro puerto y el
+rem navegador seguiria mostrando la version vieja.
+curl -s -o nul --max-time 3 http://localhost:3000
+if not errorlevel 1 goto ya_abierta
+
 if not exist "node_modules" goto instalar
 goto comprobar_base
 
@@ -56,6 +62,18 @@ echo.
 start "" /min "%~dp0_abrir-navegador.bat"
 call npm run dev
 goto fin
+
+:ya_abierta
+echo  Norvik ya esta funcionando en otra ventana.
+echo.
+echo  Si la app se ve rara o desactualizada, cierra TODAS las ventanas
+echo  negras (o reinicia el ordenador) y vuelve a abrir este archivo.
+echo.
+echo  Abriendo el navegador en http://localhost:3000
+start "" http://localhost:3000
+echo.
+pause
+exit /b 0
 
 :sin_node
 echo  Te falta instalar Node.js, que es lo que hace funcionar la app.
