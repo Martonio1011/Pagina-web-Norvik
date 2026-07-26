@@ -29,6 +29,16 @@ echo.
 call npx prisma migrate dev --name init
 if errorlevel 1 goto error
 
+:acceso_directo
+rem Crea el icono en el Escritorio la primera vez.
+set "CARPETA=%~dp0"
+for /f "usebackq delims=" %%E in (`powershell -NoProfile -Command "[Environment]::GetFolderPath('Desktop')"`) do set "ESCRITORIO=%%E"
+if not defined ESCRITORIO set "ESCRITORIO=%USERPROFILE%\Desktop"
+set "ACCESO=%ESCRITORIO%\Norvik Control Center.lnk"
+if exist "%ACCESO%" goto arrancar
+powershell -NoProfile -Command "try { $s = (New-Object -ComObject WScript.Shell).CreateShortcut($env:ACCESO); $s.TargetPath = $env:CARPETA + 'Abrir Norvik.bat'; $s.WorkingDirectory = $env:CARPETA; $s.Description = 'Norvik Control Center'; $s.Save() } catch { }"
+if exist "%ACCESO%" echo  Te he dejado un acceso directo en el Escritorio.
+
 :arrancar
 echo.
 echo  Arrancando. El navegador se abrira solo en unos segundos.
