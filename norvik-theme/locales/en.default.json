@@ -274,7 +274,6 @@
       "announcement": "Announcement",
       "announcement_bar": "Announcement bar"
     },
-
     "header": {
       "announcement": "Announcement",
       "menu": "Menu",
@@ -528,6 +527,34 @@
       "max_characters": "{{ max_chars }} characters max",
       "send_on": "YYYY-MM-DD",
       "send_on_label": "Send on (optional)"
+    }
+  },
+  "norvik": {
+    "view_all": "View all",
+    "wishlist": {
+      "save": "Save",
+      "saved": "Saved"
+    },
+    "card": {
+      "off": "off",
+      "sold_out": "Sold out",
+      "quick_add": "Quick add",
+      "pick_size": "Pick a size"
+    },
+    "rail": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "popup": {
+      "close": "Close",
+      "email": "Email address",
+      "placeholder": "Your email"
+    },
+    "ugc": {
+      "placeholder": "Add a customer photo in the theme editor"
+    },
+    "placeholder": {
+      "product": "Product name"
     }
   }
 }

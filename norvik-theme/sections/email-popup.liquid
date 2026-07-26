@@ -13,7 +13,7 @@
     hidden
   >
     <div class="nv-popup__box{% if section.settings.image != blank %} nv-popup__box--split{% endif %}">
-      <button type="button" class="nv-popup__close" data-nv-popup-close aria-label="{{ 'norvik.popup.close' | t: default: 'Close' }}">
+      <button type="button" class="nv-popup__close" data-nv-popup-close aria-label="{{ 'norvik.popup.close' | t }}">
         &times;
       </button>
 
@@ -40,13 +40,13 @@
           <input type="hidden" name="contact[tags]" value="{{ section.settings.tag }}">
           <input type="hidden" name="contact[accepts_marketing]" value="true">
           <label class="nv-visually-hidden" for="nv-popup-email">
-            {{ 'norvik.popup.email' | t: default: 'Email address' }}
+            {{ 'norvik.popup.email' | t }}
           </label>
           <input
             type="email"
             id="nv-popup-email"
             name="contact[email]"
-            placeholder="{{ 'norvik.popup.placeholder' | t: default: 'Your email' }}"
+            placeholder="{{ 'norvik.popup.placeholder' | t }}"
             required
             autocomplete="email"
           >

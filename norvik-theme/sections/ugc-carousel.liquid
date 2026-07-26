@@ -14,10 +14,10 @@
         {%- endif -%}
       </div>
       <div class="nv-rail-nav" data-nv-rail-nav="{{ rail_id }}">
-        <button type="button" data-nv-rail-prev aria-label="{{ 'norvik.rail.previous' | t: default: 'Previous' }}">
+        <button type="button" data-nv-rail-prev aria-label="{{ 'norvik.rail.previous' | t }}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-        <button type="button" data-nv-rail-next aria-label="{{ 'norvik.rail.next' | t: default: 'Next' }}">
+        <button type="button" data-nv-rail-next aria-label="{{ 'norvik.rail.next' | t }}">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       </div>
@@ -48,7 +48,7 @@
               {%- endif -%}
             {%- else -%}
               <span class="nv-ugc__empty">
-                {{ 'norvik.ugc.placeholder' | t: default: 'Add a customer photo in the theme editor' }}
+                {{ 'norvik.ugc.placeholder' | t }}
               </span>
             {%- endif -%}
           </{{ tag }}>
@@ -61,7 +61,7 @@
         {%- endcomment -%}
         {%- for i in (1..4) -%}
           <div class="nv-ugc__item">
-            <span class="nv-ugc__empty">{{ 'norvik.ugc.placeholder' | t: default: 'Add a customer photo in the theme editor' }}</span>
+            <span class="nv-ugc__empty">{{ 'norvik.ugc.placeholder' | t }}</span>
           </div>
         {%- endfor -%}
       {%- endif -%}

@@ -50,9 +50,9 @@
 <div class="nv-card">
   <div class="nv-card__media">
     {%- if on_sale -%}
-      <span class="nv-badge">{{ saving }}% {{ 'norvik.card.off' | t: default: 'off' }}</span>
+      <span class="nv-badge">{{ saving }}% {{ 'norvik.card.off' | t }}</span>
     {%- elsif product.available == false -%}
-      <span class="nv-badge nv-badge--muted">{{ 'norvik.card.sold_out' | t: default: 'Sold out' }}</span>
+      <span class="nv-badge nv-badge--muted">{{ 'norvik.card.sold_out' | t }}</span>
     {%- endif -%}
 
     {% render 'wishlist-button', product: product %}
@@ -96,15 +96,15 @@
             class="nv-quick__toggle"
             data-nv-quick-single="{{ product.selected_or_first_available_variant.id }}"
           >
-            {{ 'norvik.card.quick_add' | t: default: 'Quick add' }}
+            {{ 'norvik.card.quick_add' | t }}
           </button>
         </div>
       {%- elsif size_option -%}
         <div class="nv-quick" data-nv-quick>
           <button type="button" class="nv-quick__toggle" data-nv-quick-toggle>
-            {{ 'norvik.card.quick_add' | t: default: 'Quick add' }}
+            {{ 'norvik.card.quick_add' | t }}
           </button>
-          <div class="nv-quick__sizes" role="group" aria-label="{{ 'norvik.card.pick_size' | t: default: 'Pick a size' }}">
+          <div class="nv-quick__sizes" role="group" aria-label="{{ 'norvik.card.pick_size' | t }}">
             {%- for value in size_option.values -%}
               {%- liquid
                 assign match_id = 0
@@ -133,7 +133,7 @@
                 type="button"
                 class="nv-size"
                 data-nv-variant="{{ match_id }}"
-                {% unless match_available %}disabled aria-label="{{ value }} — {{ 'norvik.card.sold_out' | t: default: 'Sold out' }}"{% endunless %}
+                {% unless match_available %}disabled aria-label="{{ value }} — {{ 'norvik.card.sold_out' | t }}"{% endunless %}
               >
                 {{ value }}
               </button>
