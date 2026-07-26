@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { crearTarea } from "@/actions/tareas";
+import { BotonSincronizar } from "@/components/boton-sincronizar";
 import { TareaItem } from "@/components/tarea-item";
 import { Barra, COLOR_SEMAFORO, TituloPagina, Vacio } from "@/components/ui";
 import { asegurarDatosIniciales } from "@/lib/datos-iniciales";
@@ -13,6 +14,7 @@ import {
   PRIORIDADES,
 } from "@/lib/dominio";
 import { ordenarPorUrgencia, progresoPorArea } from "@/lib/resumen";
+import { AVANCES_SHOPIFY } from "@/lib/sincronizacion";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +37,13 @@ export default async function PaginaChecklist(props: {
   const hechas = tareas.filter((t) => t.estado === "hecha").length;
   const global = tareas.length ? (hechas / tareas.length) * 100 : 0;
   const areas = progresoPorArea(tareas);
+
+  const titulosHechos = new Set(
+    tareas.filter((t) => t.estado === "hecha").map((t) => t.titulo),
+  );
+  const pendientesDeSincronizar = AVANCES_SHOPIFY.filter(
+    (a) => !titulosHechos.has(a.titulo),
+  ).length;
 
   const enlaceFiltro = (clave: string, valor: string) => {
     const parametros = new URLSearchParams(
@@ -59,6 +68,8 @@ export default async function PaginaChecklist(props: {
         titulo="Checklist maestro"
         descripcion="Todo lo que hay que hacer en la tienda, ordenado por prioridad."
       />
+
+      <BotonSincronizar pendientes={pendientesDeSincronizar} />
 
       <section className="tarjeta">
         <div className="flex items-end justify-between">

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { claveDia } from "@/lib/dominio";
+import { AVANCES_SHOPIFY } from "@/lib/sincronizacion";
 
 function refrescar() {
   revalidatePath("/");
@@ -135,4 +136,28 @@ export async function crearTareaDiaria(formData: FormData) {
 export async function borrarTareaDiaria(formData: FormData) {
   await prisma.tareaDiaria.delete({ where: { id: Number(formData.get("id")) } });
   revalidatePath("/pedidos");
+}
+
+/**
+ * Marca como hechas las tareas que se resolvieron directamente en Shopify
+ * (fuera de esta app). Solo toca las que aún no estén en "hecha", así que se
+ * puede pulsar varias veces sin duplicar nada.
+ */
+export async function aplicarProgresoShopify() {
+  let aplicadas = 0;
+  for (const avance of AVANCES_SHOPIFY) {
+    const tarea = await prisma.tarea.findFirst({
+      where: { titulo: avance.titulo },
+    });
+    if (!tarea || tarea.estado === "hecha") continue;
+
+    const notas = [tarea.notas, avance.nota].filter(Boolean).join("\n\n");
+    await prisma.tarea.update({
+      where: { id: tarea.id },
+      data: { estado: "hecha", notas },
+    });
+    aplicadas++;
+  }
+  refrescar();
+  return aplicadas;
 }
