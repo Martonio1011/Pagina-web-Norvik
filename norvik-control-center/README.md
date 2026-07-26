@@ -6,7 +6,17 @@ Aplicación web local para organizar toda la tienda de dropshipping **Norvik**
 Todo corre en tu ordenador. No hay login, no hay servicios externos y los datos
 viven en un único archivo SQLite dentro del proyecto.
 
-## Arrancarla
+## Arrancarla en Windows (la forma fácil)
+
+Haz doble clic en **`Abrir Norvik.bat`**. La primera vez instala todo solo y
+tarda unos minutos; después arranca en segundos y abre el navegador.
+
+Requisito único: tener [Node.js](https://nodejs.org) instalado (versión LTS).
+Si no lo tienes, el propio lanzador te lo dirá.
+
+Para cerrar la app, cierra la ventana negra.
+
+## Arrancarla a mano
 
 Desde esta carpeta (`norvik-control-center`):
 
