@@ -1021,3 +1021,109 @@
   background: var(--nv-bone);
   border: 1px dashed var(--nv-line);
 }
+
+/* --------------------------------------------------------------------------
+   Collection page
+   -------------------------------------------------------------------------- */
+
+.nv-collection__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.nv-collection__count {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nv-ink-soft);
+}
+
+.nv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-block: 1px solid var(--nv-line);
+  margin-bottom: 1.5rem;
+}
+.nv-toolbar__facets {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Dawn's horizontal facet bar ships with its own page padding; strip it so it
+   lines up with the Norvik container instead of double-indenting. */
+.nv-toolbar .facets-container,
+.nv-toolbar .page-width {
+  padding-inline: 0;
+  max-width: none;
+}
+
+.nv-cols {
+  display: none;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+@media (min-width: 990px) {
+  .nv-cols {
+    display: flex;
+  }
+}
+.nv-cols__btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  color: var(--nv-ink-soft);
+}
+.nv-cols__btn:hover {
+  color: var(--nv-ink);
+}
+.nv-cols__btn[aria-pressed='true'] {
+  border-color: var(--nv-line);
+  color: var(--nv-ink);
+}
+.nv-cols__btn svg rect {
+  fill: currentColor;
+}
+
+.nv-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+.nv-empty p {
+  margin: 0;
+  color: var(--nv-ink-soft);
+}
+
+.nv-seo {
+  margin-top: 3rem;
+  border-top: 1px solid var(--nv-line);
+  padding-top: 1rem;
+}
+.nv-seo summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  list-style: none;
+}
+.nv-seo summary::-webkit-details-marker {
+  display: none;
+}
+.nv-seo summary::after {
+  content: ' +';
+}
+.nv-seo[open] summary::after {
+  content: ' –';
+}
+.nv-seo__body {
+  padding-top: 0.75rem;
+  max-width: 60ch;
+  font-size: 0.875rem;
+  color: var(--nv-ink-soft);
+}

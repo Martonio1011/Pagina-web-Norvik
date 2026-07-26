@@ -272,6 +272,63 @@
   });
 
   /* ------------------------------------------------------------------
+     Collection column toggle — remembered across pages via localStorage.
+     ------------------------------------------------------------------ */
+
+  var COLS_KEY = 'norvik:cols';
+
+  function applyColumns(value) {
+    document.querySelectorAll('[data-nv-grid]').forEach(function (grid) {
+      grid.dataset.cols = value;
+    });
+    document.querySelectorAll('[data-nv-cols]').forEach(function (button) {
+      button.setAttribute('aria-pressed', button.dataset.nvCols === value ? 'true' : 'false');
+    });
+  }
+
+  function setupColumns() {
+    var buttons = document.querySelectorAll('[data-nv-cols]');
+    if (!buttons.length) return;
+    var grid = document.querySelector('[data-nv-grid]');
+    var stored = null;
+    try {
+      stored = localStorage.getItem(COLS_KEY);
+    } catch (e) {
+      stored = null;
+    }
+    applyColumns(stored || (grid ? grid.dataset.cols : '3'));
+
+    /* Dawn's facets replace the grid markup over AJAX when a filter changes,
+       which would drop the chosen column count. Re-apply it after each swap. */
+    var container = document.getElementById('ProductGridContainer');
+    if (container && !container.dataset.nvColsObserved) {
+      container.dataset.nvColsObserved = 'true';
+      new MutationObserver(function () {
+        var current = null;
+        try {
+          current = localStorage.getItem(COLS_KEY);
+        } catch (e) {
+          current = null;
+        }
+        if (current) applyColumns(current);
+        syncWishlistButtons(container);
+      }).observe(container, { childList: true, subtree: true });
+    }
+  }
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-nv-cols]');
+    if (!button) return;
+    var value = button.dataset.nvCols;
+    applyColumns(value);
+    try {
+      localStorage.setItem(COLS_KEY, value);
+    } catch (e) {
+      /* ignore */
+    }
+  });
+
+  /* ------------------------------------------------------------------
      Email popup — 15s or 50% scroll, whichever comes first, once a session.
      ------------------------------------------------------------------ */
 
@@ -358,6 +415,7 @@
     updateWishlistCount();
     renderWishlistPage();
     document.querySelectorAll('[data-nv-rail-nav]').forEach(setupRail);
+    setupColumns();
     setupPopup();
   }
 

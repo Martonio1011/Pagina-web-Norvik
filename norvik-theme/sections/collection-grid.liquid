@@ -1,0 +1,171 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Dawn's facet stylesheet and script are reused as-is so filtering, sorting and
+  the "remove filter" chips keep working natively. Only the product grid and
+  the toolbar around it are Norvik's.
+{%- endcomment -%}
+{{ 'component-facets.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+
+<section class="nv-section" style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px">
+  <div class="nv-wrap">
+    {%- if section.settings.show_title -%}
+      <div class="nv-collection__head">
+        <h1 class="nv-h2">{{ collection.title | escape }}</h1>
+        {%- if collection.products_count > 0 -%}
+          <p class="nv-collection__count">
+            {{ 'norvik.collection.count' | t: count: collection.products_count }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Subcategory pills, curated per collection in the editor. {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <nav class="nv-pills" style="margin-bottom:1.25rem" aria-label="{{ 'norvik.collection.subcategories' | t }}">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign target = block.settings.collection
+            assign label = block.settings.label
+            if label == blank and target != blank
+              assign label = target.title
+            endif
+            assign link = block.settings.link
+            if link == blank and target != blank
+              assign link = target.url
+            endif
+            assign is_current = false
+            if link == collection.url
+              assign is_current = true
+            endif
+          -%}
+          {%- if label != blank -%}
+            <a
+              href="{{ link | default: '#' }}"
+              class="nv-pill"
+              {% if is_current %}aria-current="page"{% endif %}
+              {{ block.shopify_attributes }}
+            >
+              {{ label | escape }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
+
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      {%- comment -%}
+        Filters + sort. filter_type is forced to horizontal: a left rail eats
+        the width the grid needs on a fashion catalogue.
+      {%- endcomment -%}
+      {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+        <div class="nv-toolbar">
+          <div class="nv-toolbar__facets facets-wrapper">
+            {% render 'facets',
+              results: collection,
+              enable_filtering: section.settings.enable_filtering,
+              enable_sorting: section.settings.enable_sorting,
+              filter_type: 'horizontal',
+              paginate: paginate
+            %}
+          </div>
+
+          {%- if section.settings.enable_column_toggle -%}
+            <div class="nv-cols" role="group" aria-label="{{ 'norvik.collection.columns' | t }}">
+              <button type="button" class="nv-cols__btn" data-nv-cols="2" aria-label="2">
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="14"/><rect x="9" y="1" width="6" height="14"/></svg>
+              </button>
+              <button type="button" class="nv-cols__btn" data-nv-cols="3" aria-label="3">
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="4" height="14"/><rect x="6" y="1" width="4" height="14"/><rect x="11" y="1" width="4" height="14"/></svg>
+              </button>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div id="ProductGridContainer">
+        {%- if collection.products.size > 0 -%}
+          <div
+            class="nv-grid"
+            data-cols="{{ section.settings.columns_desktop }}"
+            data-nv-grid
+            id="product-grid"
+          >
+            {%- for product in collection.products -%}
+              {%- liquid
+                assign eager = 'lazy'
+                if forloop.index <= 4
+                  assign eager = 'eager'
+                endif
+              -%}
+              {% render 'norvik-card', product: product, loading: eager %}
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            {% render 'pagination', paginate: paginate, anchor: '' %}
+          {%- endif -%}
+        {%- else -%}
+          <div class="nv-empty">
+            <p>{{ 'norvik.collection.empty' | t }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="nv-btn nv-btn--ghost">
+              {{ 'norvik.collection.browse_all' | t }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endpaginate -%}
+
+    {%- comment -%}
+      SEO copy stays collapsed so it never pushes products below the fold.
+    {%- endcomment -%}
+    {%- if collection.description != blank and section.settings.show_description -%}
+      <details class="nv-seo">
+        <summary>{{ 'norvik.collection.about' | t: title: collection.title }}</summary>
+        <div class="nv-seo__body rte">{{ collection.description }}</div>
+      </details>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "tag": "section",
+  "max_blocks": 10,
+  "settings": [
+    { "type": "checkbox", "id": "show_title", "label": "Show collection title", "default": true },
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Default columns on desktop",
+      "default": "3",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    { "type": "checkbox", "id": "enable_column_toggle", "label": "Let shoppers switch 2 / 3 columns", "default": true },
+    { "type": "header", "content": "Filtering" },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filters", "default": true, "info": "Manage which filters appear in Search & Discovery." },
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
+    { "type": "header", "content": "Description" },
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true, "info": "Rendered collapsed so it never pushes products down." },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "blocks": [
+    {
+      "type": "pill",
+      "name": "Subcategory pill",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "link", "label": "Custom link", "info": "Use for tag links such as /collections/dresses/maxi-dress." }
+      ]
+    }
+  ]
+}
+{% endschema %}

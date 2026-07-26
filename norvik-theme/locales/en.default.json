@@ -560,6 +560,17 @@
       "play": "Play",
       "shop": "Shop this look",
       "placeholder": "Add a customer video in the theme editor"
+    },
+    "collection": {
+      "count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "subcategories": "Subcategories",
+      "columns": "Products per row",
+      "empty": "Nothing matches those filters yet.",
+      "browse_all": "Browse everything",
+      "about": "About {{ title }}"
     }
   }
 }
