@@ -1,0 +1,38 @@
+{%- comment -%}
+  Progress towards free shipping. Reads the threshold from theme settings so
+  the number lives in exactly one place, and re-renders with the cart drawer
+  because Dawn re-fetches this section on every cart change.
+{%- endcomment -%}
+{%- liquid
+  assign threshold_units = settings.nv_free_shipping_threshold | default: 75
+  assign threshold = threshold_units | times: 100
+  assign remaining = threshold | minus: cart.total_price
+  assign reached = false
+  if remaining <= 0
+    assign reached = true
+    assign percent = 100
+  else
+    assign percent = cart.total_price | times: 100 | divided_by: threshold
+  endif
+-%}
+
+{%- if threshold > 0 -%}
+  <div class="nv-ship{% if reached %} nv-ship--done{% endif %}">
+    <p class="nv-ship__text">
+      {%- if reached -%}
+        {{ 'norvik.cart.free_shipping_reached' | t }}
+      {%- else -%}
+        {{ 'norvik.cart.free_shipping_away_html' | t: amount: remaining | money }}
+      {%- endif -%}
+    </p>
+    <div
+      class="nv-ship__track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ percent }}"
+    >
+      <div class="nv-ship__fill" style="width: {{ percent }}%"></div>
+    </div>
+  </div>
+{%- endif -%}

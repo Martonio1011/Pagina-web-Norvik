@@ -1,0 +1,277 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+  assign media_count = product.media.size
+
+  assign on_sale = false
+  if current.compare_at_price > current.price
+    assign on_sale = true
+    assign saving = current.compare_at_price | minus: current.price | times: 100.0 | divided_by: current.compare_at_price | round
+  endif
+
+  comment
+    Fit scale lives in the custom.fit_scale metafield: 1 runs small,
+    3 true to size, 5 runs large. Anything outside that range is ignored so a
+    half-filled metafield never renders a broken widget.
+  endcomment
+  assign fit = product.metafields.custom.fit_scale.value | plus: 0
+  assign has_fit = false
+  if fit >= 1 and fit <= 5
+    assign has_fit = true
+    assign fit_percent = fit | minus: 1 | times: 25
+  endif
+-%}
+
+<section class="nv-section" style="padding-block: 24px 48px">
+  <div class="nv-wrap">
+    <div class="nv-pdp">
+      {%- comment -%} ---------------- Gallery ---------------- {%- endcomment -%}
+      <div class="nv-gallery{% if media_count > 1 %} nv-gallery--multi{% endif %}" data-nv-gallery>
+        {%- if media_count > 1 -%}
+          <div class="nv-gallery__thumbs" role="tablist" aria-label="{{ 'norvik.pdp.thumbnails' | t }}">
+            {%- for media in product.media -%}
+              <button
+                type="button"
+                class="nv-gallery__thumb"
+                role="tab"
+                data-nv-thumb="{{ forloop.index0 }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-label="{{ 'norvik.pdp.view_image' | t: number: forloop.index }}"
+              >
+                {{ media | image_url: width: 200 | image_tag: loading: 'lazy', widths: '80,120,160,200', alt: '' }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="nv-gallery__main">
+          {%- if media_count > 0 -%}
+            {%- for media in product.media -%}
+              <div class="nv-gallery__slide" data-nv-slide="{{ forloop.index0 }}" data-active="{% if forloop.first %}true{% else %}false{% endif %}">
+                {{
+                  media
+                  | image_url: width: 1400
+                  | image_tag:
+                    loading: forloop.first | default: false,
+                    widths: '400,600,800,1000,1200,1400',
+                    sizes: '(min-width: 990px) 55vw, 100vw',
+                    alt: media.alt | default: product.title
+                }}
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            {{ 'product-apparel-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} ---------------- Info ---------------- {%- endcomment -%}
+      <div>
+        <h1 class="nv-pdp__title">{{ product.title | escape }}</h1>
+
+        <p class="nv-pdp__price" data-nv-price>
+          {%- if on_sale -%}
+            <ins>{{ current.price | money }}</ins>
+            <del>{{ current.compare_at_price | money }}</del>
+            <span class="nv-badge" style="position:static">{{ saving }}% {{ 'norvik.card.off' | t }}</span>
+          {%- else -%}
+            <span>{{ current.price | money }}</span>
+          {%- endif -%}
+        </p>
+
+        {%- comment -%}
+          Star rating placeholder. A reviews app (Judge.me has a free tier)
+          injects its own widget here once installed — see the README.
+        {%- endcomment -%}
+        <p class="nv-pdp__stars">{{ 'norvik.pdp.no_reviews' | t }}</p>
+
+        {%- form 'product', product, id: 'nv-product-form', novalidate: 'novalidate' -%}
+          <input type="hidden" name="id" value="{{ current.id }}" data-nv-variant-id>
+
+          {%- unless product.has_only_default_variant -%}
+            {%- for option in product.options_with_values -%}
+              {%- liquid
+                assign option_name = option.name | downcase
+                assign is_colour = false
+                if option_name contains 'color' or option_name contains 'colour'
+                  assign is_colour = true
+                endif
+                comment
+                  Size is deliberately left unselected so the shopper has to
+                  make a conscious choice — the button stays disabled with
+                  "Select a size" until they do.
+                endcomment
+                assign is_size = false
+                if option_name contains 'size' or option_name contains 'talla'
+                  assign is_size = true
+                endif
+              -%}
+              <div class="nv-opt" data-nv-option="{{ forloop.index }}" data-nv-is-size="{{ is_size }}">
+                <div class="nv-opt__label">
+                  <span>{{ option.name }}</span>
+                  <span data-nv-option-current>{% unless is_size %}{{ option.selected_value }}{% endunless %}</span>
+                </div>
+                <div class="nv-opt__values">
+                  {%- for value in option.values -%}
+                    {%- assign input_id = 'opt-' | append: forloop.parentloop.index | append: '-' | append: forloop.index -%}
+                    <span>
+                      <input
+                        type="radio"
+                        id="{{ input_id }}"
+                        name="option-{{ forloop.parentloop.index }}"
+                        value="{{ value | escape }}"
+                        data-nv-value
+                        {% if option.selected_value == value and is_size == false %}checked{% endif %}
+                      >
+                      <label
+                        for="{{ input_id }}"
+                        class="nv-opt__chip{% if is_colour %} nv-opt__swatch{% endif %}"
+                        {% if is_colour %}
+                          style="{% if value.swatch.image %}background-image:url({{ value.swatch.image | image_url: width: 80 }}){% else %}background-color:{{ value.swatch.color | default: value | downcase | replace: ' ', '' }}{% endif %}"
+                          title="{{ value }}"
+                        {% endif %}
+                      >
+                        {%- unless is_colour -%}{{ value }}{%- endunless -%}
+                        {%- if is_colour -%}<span class="nv-visually-hidden">{{ value }}</span>{%- endif -%}
+                      </label>
+                    </span>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+
+            {%- if product.metafields.custom.size_guide_url or settings.nv_size_guide_page != blank -%}
+              <p style="margin:-.5rem 0 1.25rem">
+                <a href="{{ settings.nv_size_guide_page | default: '/pages/size-guide' }}" class="nv-head__link">
+                  {{ 'norvik.pdp.size_guide' | t }}
+                </a>
+              </p>
+            {%- endif -%}
+          {%- endunless -%}
+
+          {%- if has_fit -%}
+            <div class="nv-fit">
+              <p class="nv-fit__title">{{ 'norvik.pdp.fit' | t }}</p>
+              <div class="nv-fit__track">
+                <span class="nv-fit__marker" style="left: {{ fit_percent }}%"></span>
+              </div>
+              <div class="nv-fit__scale">
+                <span>{{ 'norvik.pdp.runs_small' | t }}</span>
+                <span>{{ 'norvik.pdp.true_size' | t }}</span>
+                <span>{{ 'norvik.pdp.runs_large' | t }}</span>
+              </div>
+              {%- if product.metafields.custom.fit_note != blank -%}
+                <p class="nv-fit__note">{{ product.metafields.custom.fit_note }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <div class="nv-buy">
+            <button
+              type="submit"
+              name="add"
+              class="nv-btn nv-btn--full"
+              data-nv-add
+              disabled
+            >
+              <span data-nv-add-text>{{ 'norvik.pdp.select_size' | t }}</span>
+            </button>
+
+            {%- comment -%} Shop Pay Installments — rendered natively by Shopify. {%- endcomment -%}
+            <div class="nv-buy__terms">{{ form | payment_terms }}</div>
+
+            {% render 'wishlist-button', product: product, style: 'inline' %}
+          </div>
+        {%- endform -%}
+
+        <div class="nv-trust">
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13v10H3zM16 10h3l2 3v4h-5z"/><circle cx="7" cy="17" r="2"/><circle cx="18" cy="17" r="2"/></svg>
+            <span>{{ 'norvik.pdp.shipping_line' | t: days: settings.nv_delivery_estimate | default: '7-15 business days' }}</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10H9"/></svg>
+            <span>{{ 'norvik.pdp.returns_line' | t }}</span>
+          </div>
+        </div>
+
+        {%- comment -%} ---------------- Accordions ---------------- {%- endcomment -%}
+        <details class="nv-acc" open>
+          <summary>{{ 'norvik.pdp.description' | t }}</summary>
+          <div class="nv-acc__body rte">{{ product.description }}</div>
+        </details>
+
+        <details class="nv-acc">
+          <summary>{{ 'norvik.pdp.size_fit' | t }}</summary>
+          <div class="nv-acc__body rte">
+            {%- if product.metafields.custom.size_fit != blank -%}
+              {{ product.metafields.custom.size_fit }}
+            {%- else -%}
+              <p>{{ 'norvik.pdp.size_fit_default' | t }}</p>
+            {%- endif -%}
+            <p><a href="{{ settings.nv_size_guide_page | default: '/pages/size-guide' }}">{{ 'norvik.pdp.size_guide' | t }}</a></p>
+          </div>
+        </details>
+
+        <details class="nv-acc">
+          <summary>{{ 'norvik.pdp.shipping' | t }}</summary>
+          <div class="nv-acc__body rte">
+            {%- comment -%}
+              Being explicit about the real dispatch window is the single
+              biggest lever against chargebacks on a dropshipped catalogue.
+            {%- endcomment -%}
+            <p>{{ 'norvik.pdp.shipping_body' | t: days: settings.nv_delivery_estimate | default: '7-15 business days' }}</p>
+            <p><a href="/policies/shipping-policy">{{ 'norvik.pdp.shipping_policy' | t }}</a></p>
+          </div>
+        </details>
+
+        <details class="nv-acc">
+          <summary>{{ 'norvik.pdp.returns' | t }}</summary>
+          <div class="nv-acc__body rte">
+            <p>{{ 'norvik.pdp.returns_body' | t }}</p>
+            <p><a href="/policies/refund-policy">{{ 'norvik.pdp.returns_policy' | t }}</a></p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%}
+  Variant data for the picker. Only the fields the client needs, to keep the
+  payload small on products with 28 variants.
+{%- endcomment -%}
+<script>
+  window.norvikStrings = {
+    add: {{ 'norvik.pdp.add' | t | json }},
+    soldOut: {{ 'norvik.card.sold_out' | t | json }},
+    selectSize: {{ 'norvik.pdp.select_size' | t | json }},
+    selectOption: {{ 'norvik.pdp.select_option' | t | json }},
+    unavailable: {{ 'norvik.pdp.unavailable' | t | json }}
+  };
+</script>
+
+<script type="application/json" data-nv-variants>
+  [
+    {%- for variant in product.variants -%}
+      {
+        "id": {{ variant.id }},
+        "options": {{ variant.options | json }},
+        "available": {{ variant.available }},
+        "price": {{ variant.price | money | json }},
+        "compare_at_price": {{ variant.compare_at_price | money | json }},
+        "on_sale": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
+        "media_position": {% if variant.featured_media %}{{ variant.featured_media.position | minus: 1 }}{% else %}null{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}

@@ -329,6 +329,175 @@
   });
 
   /* ------------------------------------------------------------------
+     Product page — gallery and variant picker.
+     ------------------------------------------------------------------ */
+
+  function setupGallery() {
+    var gallery = document.querySelector('[data-nv-gallery]');
+    if (!gallery) return;
+
+    gallery.addEventListener('click', function (event) {
+      var thumb = event.target.closest('[data-nv-thumb]');
+      if (!thumb) return;
+      showSlide(Number(thumb.dataset.nvThumb));
+    });
+  }
+
+  function showSlide(index) {
+    var gallery = document.querySelector('[data-nv-gallery]');
+    if (!gallery) return;
+    gallery.querySelectorAll('[data-nv-slide]').forEach(function (slide) {
+      slide.dataset.active = Number(slide.dataset.nvSlide) === index ? 'true' : 'false';
+    });
+    gallery.querySelectorAll('[data-nv-thumb]').forEach(function (thumb) {
+      thumb.setAttribute('aria-current', Number(thumb.dataset.nvThumb) === index ? 'true' : 'false');
+    });
+  }
+
+  function setupVariants() {
+    var form = document.getElementById('nv-product-form');
+    var dataNode = document.querySelector('[data-nv-variants]');
+    if (!form || !dataNode) return;
+
+    var variants;
+    try {
+      variants = JSON.parse(dataNode.textContent);
+    } catch (e) {
+      /* Malformed payload: leave the native form alone rather than break it. */
+      return;
+    }
+
+    var groups = Array.prototype.slice.call(form.querySelectorAll('[data-nv-option]'));
+    var button = form.querySelector('[data-nv-add]');
+    var buttonText = form.querySelector('[data-nv-add-text]');
+    var idField = form.querySelector('[data-nv-variant-id]');
+    var priceNode = document.querySelector('[data-nv-price]');
+    var strings = window.norvikStrings || {};
+
+    function selection() {
+      return groups.map(function (group) {
+        var checked = group.querySelector('input:checked');
+        return checked ? checked.value : null;
+      });
+    }
+
+    function matches(variant, chosen) {
+      return chosen.every(function (value, index) {
+        return value === null || variant.options[index] === value;
+      });
+    }
+
+    function update() {
+      var chosen = selection();
+
+      groups.forEach(function (group, index) {
+        var current = group.querySelector('[data-nv-option-current]');
+        if (current) current.textContent = chosen[index] || '';
+
+        /* Grey out values that cannot be combined with the other choices. */
+        group.querySelectorAll('input[data-nv-value]').forEach(function (input) {
+          var probe = chosen.slice();
+          probe[index] = input.value;
+          var reachable = variants.some(function (variant) {
+            return variant.available && matches(variant, probe);
+          });
+          var label = input.nextElementSibling;
+          if (label) label.dataset.available = reachable ? 'true' : 'false';
+        });
+      });
+
+      var incomplete = chosen.indexOf(null) !== -1;
+      if (incomplete) {
+        var pendingGroup = groups[chosen.indexOf(null)];
+        var isSize = pendingGroup && pendingGroup.dataset.nvIsSize === 'true';
+        button.disabled = true;
+        if (buttonText) {
+          buttonText.textContent = isSize
+            ? strings.selectSize || 'Select a size'
+            : strings.selectOption || 'Select an option';
+        }
+        return;
+      }
+
+      var variant = variants.find(function (candidate) {
+        return matches(candidate, chosen);
+      });
+
+      if (!variant) {
+        button.disabled = true;
+        if (buttonText) buttonText.textContent = strings.unavailable || 'Unavailable';
+        return;
+      }
+
+      if (idField) idField.value = variant.id;
+
+      /* Keep the URL shareable and let a refresh land on the same variant. */
+      if (window.history && window.history.replaceState) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('variant', variant.id);
+        window.history.replaceState({}, '', url);
+      }
+
+      if (priceNode) {
+        if (variant.on_sale) {
+          priceNode.innerHTML =
+            '<ins>' + variant.price + '</ins><del>' + variant.compare_at_price + '</del>';
+        } else {
+          priceNode.textContent = variant.price;
+        }
+      }
+
+      if (variant.media_position !== null && variant.media_position !== undefined) {
+        showSlide(variant.media_position);
+      }
+
+      button.disabled = !variant.available;
+      if (buttonText) {
+        buttonText.textContent = variant.available
+          ? strings.add || 'Add to bag'
+          : strings.soldOut || 'Sold out';
+      }
+    }
+
+    form.addEventListener('change', function (event) {
+      if (event.target.matches('input[data-nv-value]')) update();
+    });
+
+    update();
+  }
+
+  /* ------------------------------------------------------------------
+     Product recommendations — fetched after paint so they never block it.
+     ------------------------------------------------------------------ */
+
+  function setupRecommendations() {
+    document.querySelectorAll('[data-nv-recommendations]').forEach(function (holder) {
+      if (holder.dataset.nvLoaded) return;
+      holder.dataset.nvLoaded = 'true';
+
+      fetch(holder.dataset.url)
+        .then(function (response) {
+          return response.text();
+        })
+        .then(function (html) {
+          var parsed = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = parsed.querySelector('[data-nv-recommendations]');
+          if (!fresh || !fresh.innerHTML.trim()) {
+            /* No pairings configured yet — remove the empty shell entirely
+               rather than leave a stray heading with nothing under it. */
+            holder.remove();
+            return;
+          }
+          holder.innerHTML = fresh.innerHTML;
+          syncWishlistButtons(holder);
+        })
+        .catch(function () {
+          holder.remove();
+        });
+    });
+  }
+
+  /* ------------------------------------------------------------------
      Email popup — 15s or 50% scroll, whichever comes first, once a session.
      ------------------------------------------------------------------ */
 
@@ -416,6 +585,9 @@
     renderWishlistPage();
     document.querySelectorAll('[data-nv-rail-nav]').forEach(setupRail);
     setupColumns();
+    setupGallery();
+    setupVariants();
+    setupRecommendations();
     setupPopup();
   }
 

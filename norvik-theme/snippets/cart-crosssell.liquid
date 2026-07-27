@@ -1,0 +1,68 @@
+{%- comment -%}
+  "You may also love" inside the cart drawer.
+
+  Recommendations are based on the first item in the cart. Only products that
+  are not already in the cart are shown, and adding one never navigates away —
+  norvik.js adds it in place and re-renders the drawer.
+{%- endcomment -%}
+{%- liquid
+  assign seed = cart.items.first.product
+  assign limit = settings.nv_crosssell_count | default: 3
+-%}
+
+{%- if seed != blank -%}
+  {%- assign candidates = seed.collections.first.products | default: collections.all.products -%}
+
+  {%- comment -%} Build the list of product ids already in the cart. {%- endcomment -%}
+  {%- assign in_cart = '' -%}
+  {%- for item in cart.items -%}
+    {%- assign in_cart = in_cart | append: item.product_id | append: ',' -%}
+  {%- endfor -%}
+
+  {%- assign shown = 0 -%}
+  {%- capture crosssell -%}
+    {%- for candidate in candidates -%}
+      {%- if shown >= limit -%}{%- break -%}{%- endif -%}
+      {%- assign needle = candidate.id | append: ',' -%}
+      {%- comment -%} Liquid has no "not contains", so resolve it first. {%- endcomment -%}
+      {%- assign already_in_cart = false -%}
+      {%- if in_cart contains needle -%}
+        {%- assign already_in_cart = true -%}
+      {%- endif -%}
+      {%- if candidate.available and candidate.id != seed.id and already_in_cart == false -%}
+        {%- assign shown = shown | plus: 1 -%}
+        <li class="nv-crosssell__item">
+          <a href="{{ candidate.url }}" tabindex="-1" aria-hidden="true">
+            {%- if candidate.featured_media -%}
+              {{ candidate.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', widths: '80,120,160', alt: '' }}
+            {%- endif -%}
+          </a>
+          <div>
+            <a href="{{ candidate.url }}" class="nv-crosssell__name">{{ candidate.title | escape }}</a>
+            <p class="nv-crosssell__price">{{ candidate.price | money }}</p>
+          </div>
+          {%- if candidate.has_only_default_variant -%}
+            <button
+              type="button"
+              class="nv-crosssell__add"
+              data-nv-quick-single="{{ candidate.selected_or_first_available_variant.id }}"
+            >
+              {{ 'norvik.cart.add' | t }}
+            </button>
+          {%- else -%}
+            <a href="{{ candidate.url }}" class="nv-crosssell__add">{{ 'norvik.cart.view' | t }}</a>
+          {%- endif -%}
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if shown > 0 -%}
+    <div class="nv-crosssell">
+      <p class="nv-crosssell__title">{{ 'norvik.cart.also_love' | t }}</p>
+      <ul class="nv-crosssell__list" role="list" style="list-style:none;margin:0;padding:0">
+        {{ crosssell }}
+      </ul>
+    </div>
+  {%- endif -%}
+{%- endif -%}

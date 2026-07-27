@@ -75,6 +75,29 @@
         "label": "Delivery estimate",
         "default": "7-15 business days",
         "info": "Shown on the product page. Being upfront about dropshipping times reduces disputes."
+      },
+      {
+        "type": "header",
+        "content": "Cart drawer"
+      },
+      {
+        "type": "range",
+        "id": "nv_crosssell_count",
+        "label": "Cross-sell products in the cart",
+        "min": 0,
+        "max": 4,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "header",
+        "content": "Links"
+      },
+      {
+        "type": "url",
+        "id": "nv_size_guide_page",
+        "label": "Size guide page",
+        "info": "Linked from the product page. Defaults to /pages/size-guide."
       }
     ]
   },

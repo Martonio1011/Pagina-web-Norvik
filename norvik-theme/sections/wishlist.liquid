@@ -1,0 +1,44 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Renders every product in the store, hidden by default; norvik.js reveals only
+  the handles saved in localStorage. No app, no account, no server round trip —
+  and it degrades to an empty state if JavaScript never runs.
+{%- endcomment -%}
+
+<section class="nv-section" data-nv-wishlist-page>
+  <div class="nv-wrap">
+    <div class="nv-head">
+      <div>
+        <h1 class="nv-h2">{{ section.settings.heading | escape }}</h1>
+        <p class="nv-eyebrow">{{ section.settings.subheading | escape }}</p>
+      </div>
+    </div>
+
+    <div class="nv-wishlist__empty" data-nv-wishlist-empty>
+      <p>{{ 'norvik.wishlist.empty' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="nv-btn nv-btn--ghost">
+        {{ 'norvik.collection.browse_all' | t }}
+      </a>
+    </div>
+
+    <div class="nv-grid" data-cols="4" data-nv-wishlist-grid hidden>
+      {%- for product in collections.all.products -%}
+        <div data-nv-wishlist-item="{{ product.handle }}" hidden>
+          {% render 'norvik-card', product: product %}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your wishlist" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Saved on this device" }
+  ]
+}
+{% endschema %}

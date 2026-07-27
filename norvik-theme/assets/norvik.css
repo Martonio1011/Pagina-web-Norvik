@@ -1127,3 +1127,387 @@
   font-size: 0.875rem;
   color: var(--nv-ink-soft);
 }
+
+/* --------------------------------------------------------------------------
+   Product page
+   -------------------------------------------------------------------------- */
+
+.nv-pdp {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+@media (min-width: 990px) {
+  .nv-pdp {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 3rem;
+  }
+}
+
+/* Gallery ------------------------------------------------------------- */
+
+.nv-gallery {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 750px) {
+  /* Thumbnail rail only exists when there is more than one image, so a
+     single-photo product (our jewellery and bags) keeps the full width. */
+  .nv-gallery--multi {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+}
+.nv-gallery__thumbs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  order: 2;
+}
+.nv-gallery__thumbs::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 750px) {
+  .nv-gallery__thumbs {
+    order: 0;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 44rem;
+  }
+}
+.nv-gallery__thumb {
+  flex: 0 0 auto;
+  width: 4rem;
+  padding: 0;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  aspect-ratio: 2 / 3;
+}
+@media (min-width: 750px) {
+  .nv-gallery__thumb {
+    width: 100%;
+  }
+}
+.nv-gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.nv-gallery__thumb[aria-current='true'] {
+  border-color: var(--nv-ink);
+}
+.nv-gallery__main {
+  position: relative;
+  background: var(--nv-bone);
+}
+.nv-gallery__slide {
+  display: none;
+}
+.nv-gallery__slide[data-active='true'] {
+  display: block;
+}
+.nv-gallery__slide img,
+.nv-gallery__slide svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Info column --------------------------------------------------------- */
+
+.nv-pdp__title {
+  font-family: var(--font-heading-family);
+  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
+}
+.nv-pdp__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem;
+}
+.nv-pdp__price del {
+  font-size: 1rem;
+  color: var(--nv-ink-soft);
+}
+.nv-pdp__price ins {
+  text-decoration: none;
+  color: var(--nv-accent);
+}
+.nv-pdp__stars {
+  font-size: 0.8125rem;
+  color: var(--nv-ink-soft);
+  margin: 0 0 1.25rem;
+}
+
+.nv-opt {
+  margin-bottom: 1.25rem;
+}
+.nv-opt__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.nv-opt__label span:last-child {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--nv-ink-soft);
+}
+.nv-opt__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.nv-opt__values input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.nv-opt__chip {
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0 0.875rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--nv-line);
+  background: var(--nv-white);
+  font-size: 0.875rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s var(--nv-ease);
+}
+.nv-opt__chip:hover {
+  border-color: var(--nv-ink);
+}
+input:checked + .nv-opt__chip {
+  background: var(--nv-ink);
+  border-color: var(--nv-ink);
+  color: var(--nv-white);
+}
+input:focus-visible + .nv-opt__chip {
+  outline: 2px solid var(--nv-accent);
+  outline-offset: 2px;
+}
+/* Sold out stays visible and struck through — never hidden */
+.nv-opt__chip[data-available='false'] {
+  color: var(--nv-ink-soft);
+}
+.nv-opt__chip[data-available='false']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top left,
+    transparent calc(50% - 0.5px),
+    currentColor calc(50% - 0.5px),
+    currentColor calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+  opacity: 0.5;
+}
+.nv-opt__swatch {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 0;
+  padding: 0;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}
+input:checked + .nv-opt__swatch {
+  box-shadow: 0 0 0 2px var(--nv-white) inset, 0 0 0 2px var(--nv-ink);
+}
+
+/* Fit scale ----------------------------------------------------------- */
+
+.nv-fit {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--nv-bone);
+}
+.nv-fit__title {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+}
+.nv-fit__track {
+  position: relative;
+  height: 0.25rem;
+  background: var(--nv-line);
+  margin: 0 0 0.5rem;
+}
+.nv-fit__marker {
+  position: absolute;
+  top: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background: var(--nv-accent);
+  transform: translate(-50%, -50%);
+  transition: left 0.3s var(--nv-ease);
+}
+.nv-fit__scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--nv-ink-soft);
+}
+.nv-fit__note {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+}
+
+/* Buy area ------------------------------------------------------------ */
+
+.nv-buy {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+.nv-buy__terms {
+  font-size: 0.8125rem;
+  text-align: center;
+}
+.nv-trust {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+  padding: 1rem 0;
+  border-block: 1px solid var(--nv-line);
+  font-size: 0.8125rem;
+  color: var(--nv-ink-soft);
+}
+.nv-trust div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+.nv-trust svg {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  stroke: var(--nv-ink);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+/* Accordions ---------------------------------------------------------- */
+
+.nv-acc {
+  border-bottom: 1px solid var(--nv-line);
+}
+.nv-acc summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  list-style: none;
+}
+.nv-acc summary::-webkit-details-marker {
+  display: none;
+}
+.nv-acc summary::after {
+  content: '+';
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.nv-acc[open] summary::after {
+  content: '–';
+}
+.nv-acc__body {
+  padding-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.nv-acc__body > :first-child {
+  margin-top: 0;
+}
+
+/* Reviews placeholder ------------------------------------------------- */
+
+.nv-reviews {
+  border: 1px dashed var(--nv-line);
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--nv-ink-soft);
+  font-size: 0.875rem;
+}
+
+/* Cart drawer extras --------------------------------------------------- */
+
+.nv-crosssell {
+  border-top: 1px solid var(--nv-line);
+  padding: 1rem;
+}
+.nv-crosssell__title {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+}
+.nv-crosssell__list {
+  display: grid;
+  gap: 0.75rem;
+}
+.nv-crosssell__item {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+.nv-crosssell__item img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+.nv-crosssell__name {
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  text-decoration: none;
+  color: inherit;
+}
+.nv-crosssell__price {
+  font-size: 0.75rem;
+  color: var(--nv-ink-soft);
+}
+.nv-crosssell__add {
+  border: 1px solid var(--nv-ink);
+  background: none;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+.nv-crosssell__add:hover {
+  background: var(--nv-ink);
+  color: var(--nv-white);
+}
+
+/* Wishlist page -------------------------------------------------------- */
+
+.nv-wishlist__empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}

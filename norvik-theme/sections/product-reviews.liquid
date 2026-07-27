@@ -1,0 +1,37 @@
+{{ 'norvik.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Anchor for a reviews app. Judge.me, Loox and Okendo all inject their widget
+  into an element on the product page; point the app at #norvik-reviews and it
+  replaces this placeholder. Until then it explains itself instead of showing
+  fake stars.
+{%- endcomment -%}
+<section class="nv-section" style="padding-block: 0 48px">
+  <div class="nv-wrap">
+    <div class="nv-head">
+      <h2 class="nv-h2">{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div id="norvik-reviews">
+      {%- if section.settings.show_placeholder -%}
+        <div class="nv-reviews">{{ 'norvik.reviews.placeholder' | t }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reviews",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Reviews" },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show setup note",
+      "default": true,
+      "info": "Turn this off once your reviews app is installed and rendering here."
+    }
+  ]
+}
+{% endschema %}

@@ -533,7 +533,8 @@
     "view_all": "View all",
     "wishlist": {
       "save": "Save",
-      "saved": "Saved"
+      "saved": "Saved",
+      "empty": "Nothing saved yet. Tap the heart on anything you love."
     },
     "card": {
       "off": "off",
@@ -571,6 +572,42 @@
       "empty": "Nothing matches those filters yet.",
       "browse_all": "Browse everything",
       "about": "About {{ title }}"
+    },
+    "pdp": {
+      "thumbnails": "Product images",
+      "view_image": "View image {{ number }}",
+      "no_reviews": "No reviews yet",
+      "size_guide": "Size guide",
+      "fit": "How it fits",
+      "runs_small": "Runs small",
+      "true_size": "True to size",
+      "runs_large": "Runs large",
+      "add": "Add to bag",
+      "select_size": "Select a size",
+      "select_option": "Select an option",
+      "unavailable": "Unavailable",
+      "shipping_line": "Ships in {{ days }} — tracked all the way",
+      "returns_line": "30-day returns on unworn items",
+      "description": "Description",
+      "size_fit": "Size & fit",
+      "size_fit_default": "Model wears a size S. If you are between sizes we recommend sizing up.",
+      "shipping": "Shipping",
+      "shipping_body": "Orders are dispatched from our supplier and arrive in {{ days }}. You will get a tracking number by email as soon as it ships.",
+      "shipping_policy": "Read the full shipping policy",
+      "returns": "Returns",
+      "returns_body": "Changed your mind? Return unworn items within 30 days of delivery.",
+      "returns_policy": "Read the full return policy",
+      "complete_look": "Complete the look"
+    },
+    "cart": {
+      "free_shipping_away_html": "You're <b>{{ amount }}</b> away from free shipping",
+      "free_shipping_reached": "Free shipping unlocked ✓",
+      "also_love": "You may also love",
+      "add": "Add",
+      "view": "View"
+    },
+    "reviews": {
+      "placeholder": "Reviews will appear here once a reviews app is connected."
     }
   }
 }
