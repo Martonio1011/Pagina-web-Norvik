@@ -1,0 +1,98 @@
+# ---------------------------------------------------------------------------
+# Norvik store sections.
+#
+# This file is the single source of truth for how the store is divided, what
+# each section should cost the customer, and how much margin it has to earn.
+# It is versioned in git on purpose: changing a price band is a business
+# decision and should show up in the history like any other.
+#
+# Nothing here is compiled into the code. Edit, save, reload the app.
+#
+# priceBand      — the retail range a product must land in to belong here.
+#                  Values in US dollars, as shown to the customer.
+# targetMargin   — target GROSS margin as a fraction of retail price.
+#                  Suggested retail = landed cost / (1 - targetMargin),
+#                  then pulled back inside the band.
+# collections    — handles of the matching Shopify collections. Used to work
+#                  out how many products each section actually holds.
+# match          — how a supplier product gets assigned to this section.
+#                  Rules are evaluated top to bottom, first section wins,
+#                  so the most specific sections are listed first.
+# ---------------------------------------------------------------------------
+
+defaults:
+  targetMargin: 0.65
+  # Applied when a product's suggested retail would fall below the band floor.
+  # Below this the product is not worth the catalogue slot regardless of margin.
+  minAcceptableMarginPct: 0.5
+
+sections:
+  - key: accessories
+    label: Accessories
+    priceBand: { min: 26, max: 49 }
+    targetMargin: 0.68
+    collections: [accessories]
+    match:
+      productTypes: [bag, bags, necklace, bracelet, earrings, jewelry, hat, scarf, belt, sunglasses]
+      keywords:
+        [
+          bag,
+          tote,
+          clutch,
+          purse,
+          necklace,
+          bracelet,
+          earring,
+          hat,
+          scarf,
+          belt,
+          sunglasses,
+          hair clip,
+          headband,
+        ]
+
+  - key: jumpsuits
+    label: Jumpsuits
+    priceBand: { min: 52, max: 64 }
+    collections: []
+    match:
+      productTypes: [jumpsuit, romper, playsuit]
+      keywords: [jumpsuit, romper, playsuit, overall]
+
+  - key: linen-sets
+    label: Linen Sets
+    priceBand: { min: 46, max: 72 }
+    collections: []
+    match:
+      productTypes: [set, sets, two piece, matching set]
+      # A "set" only belongs here when it reads as one — a top plus a bottom.
+      keywords: [two piece set, matching set, top and shorts, top and pants, co-ord, coord, set]
+      requireAny: [linen, eyelet, cotton, knit, gauze, crochet]
+
+  # Both dress sections share the same Shopify product type, so length is what
+  # separates them and the product type is deliberately not listed here. A
+  # dress whose title says nothing about its length matches neither section and
+  # is reported as unclassified rather than being filed under a guess.
+  - key: maxi-dresses
+    label: Maxi Dresses
+    priceBand: { min: 42, max: 72 }
+    collections: [dresses]
+    match:
+      productTypes: []
+      keywords: [maxi, floor length, full length, long dress, gown]
+
+  - key: mini-midi-dresses
+    label: Mini & Midi Dresses
+    priceBand: { min: 42, max: 72 }
+    collections: [dresses]
+    match:
+      productTypes: []
+      keywords: [mini, midi, knee length, tea length, short dress]
+
+  - key: resort-wear
+    label: Resort Wear
+    priceBand: { min: 42, max: 72 }
+    collections: [resort-wear]
+    match:
+      productTypes: [cover up, swim cover, kaftan, kimono, skirt, top, pants, shorts]
+      keywords: [resort, vacation, beach, cover-up, cover up, kaftan, caftan, kimono, sarong, poolside]
