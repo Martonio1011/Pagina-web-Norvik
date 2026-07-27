@@ -32,25 +32,25 @@
             "label": "Resort wear"
           }
         },
-        "accessories": {
-          "type": "pill",
-          "settings": {
-            "collection": "accessories",
-            "label": "Jewellery & bags"
-          }
-        },
         "all": {
           "type": "pill",
           "settings": {
             "label": "Shop all",
             "link": "/collections/all"
           }
+        },
+        "acc": {
+          "type": "pill",
+          "settings": {
+            "collection": "accessories",
+            "label": "Jewellery & bags"
+          }
         }
       },
       "block_order": [
         "dresses",
         "resort",
-        "accessories",
+        "acc",
         "all"
       ],
       "settings": {
@@ -139,7 +139,7 @@
           "type": "item",
           "settings": {
             "title": "Free shipping",
-            "text": "On every order over {{ threshold }}."
+            "text": "On every order over $75."
           }
         },
         "welcome": {
@@ -167,38 +167,6 @@
         "padding_bottom": 24
       }
     },
-    "newsletter": {
-      "type": "newsletter",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Be first to know"
-          }
-        },
-        "paragraph": {
-          "type": "paragraph",
-          "settings": {
-            "text": "<p>New arrivals, restocks and the occasional 15% off. Nothing else.</p>"
-          }
-        },
-        "email_form": {
-          "type": "email_form",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "heading",
-        "paragraph",
-        "email_form"
-      ],
-      "settings": {
-        "color_scheme": "scheme-2",
-        "full_width": true,
-        "padding_top": 48,
-        "padding_bottom": 48
-      }
-    },
     "customer_videos": {
       "type": "customer-videos",
       "settings": {
@@ -217,7 +185,6 @@
     "editorial",
     "ugc",
     "incentives",
-    "customer_videos",
-    "newsletter"
+    "customer_videos"
   ]
 }
