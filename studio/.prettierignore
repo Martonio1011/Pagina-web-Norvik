@@ -1,0 +1,9 @@
+node_modules/
+.next/
+generated/
+coverage/
+playwright-report/
+test-results/
+prisma/migrations/
+fixtures/
+*.md

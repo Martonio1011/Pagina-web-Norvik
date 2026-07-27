@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit checks for Norvik Sourcing Studio.
+#
+# Runs only when something under studio/ is staged, so editing the Shopify
+# theme at the repository root does not pay for the app's test suite.
+#
+# Install once with:  git config core.hooksPath .githooks
+
+set -e
+
+if ! git diff --cached --name-only | grep -q '^studio/'; then
+  exit 0
+fi
+
+echo "→ studio: typecheck, lint and tests"
+cd studio
+npm run typecheck
+npm run lint
+npm test

@@ -1,0 +1,32 @@
+node_modules/
+.next/
+out/
+build/
+generated/
+
+# Local database — never committed. Recreated with `npm run setup`.
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+prisma/*.db*
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Trendsi browser session (contains your login cookies)
+.trendsi-session/
+.cache/
+
+# Scrape cache and generated exports
+.ingest-cache/
+exports/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+next-env.d.ts
