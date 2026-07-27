@@ -1,0 +1,265 @@
+{
+  "_fixture": {
+    "capturedAt": "2026-07-27",
+    "source": "Shopify Admin GraphQL API, query NorvikProducts, store norviik.myshopify.com",
+    "why": "Five real products chosen to cover every case the mapper and the matcher have to survive: our own TRD- SKU with a size suffix, a TRD- SKU with a colour suffix, Trendsi's 15-digit sku ids from their Shopify app import, a product priced above its section band, and a product that contradicts the brand rules. Nothing here is invented — it is the store as it actually stands.",
+    "note": "Trimmed to the first variants of each product to keep the file readable. Real responses return up to 100 variants per product."
+  },
+  "products": {
+    "pageInfo": { "hasNextPage": false, "endCursor": null },
+    "nodes": [
+      {
+        "id": "gid://shopify/Product/8396732301501",
+        "title": "Cowl Neck Wide-Leg Jumpsuit",
+        "handle": "cowl-neck-wide-leg-jumpsuit",
+        "status": "DRAFT",
+        "vendor": "Trendsi",
+        "productType": "Jumpsuit",
+        "tags": ["Cowl Neck", "Jumpsuit", "Resort Wear", "Ship From Overseas", "Trendsi", "Wide Leg"],
+        "descriptionHtml": "<p>Fluid wide legs, a draped cowl neckline and a defined waist: this jumpsuit does the work of a full outfit in one elegant piece.</p>",
+        "totalInventory": 0,
+        "createdAt": "2026-07-13T22:31:48Z",
+        "updatedAt": "2026-07-26T14:02:23Z",
+        "featuredMedia": {
+          "preview": {
+            "image": {
+              "url": "https://cdn.shopify.com/s/files/1/0774/5634/3229/files/44ce13fe-6b52-4f5b-9925-e0ba146e240d-Max.webp?v=1783981910"
+            }
+          }
+        },
+        "collections": {
+          "nodes": [
+            {
+              "id": "gid://shopify/Collection/340308000957",
+              "title": "Resort Wear",
+              "handle": "resort-wear"
+            }
+          ]
+        },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/47641289392317",
+              "sku": "TRD-392458-S",
+              "title": "S",
+              "price": "29.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 0,
+              "selectedOptions": [{ "name": "Size", "value": "S" }]
+            },
+            {
+              "id": "gid://shopify/ProductVariant/47641289425085",
+              "sku": "TRD-392458-M",
+              "title": "M",
+              "price": "29.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 0,
+              "selectedOptions": [{ "name": "Size", "value": "M" }]
+            }
+          ]
+        }
+      },
+      {
+        "id": "gid://shopify/Product/8400839475389",
+        "title": "Striped Woven Straw Shoulder Bag",
+        "handle": "striped-woven-straw-shoulder-bag",
+        "status": "ACTIVE",
+        "vendor": "Trendsi",
+        "productType": "Bags",
+        "tags": ["Bag", "Resort Wear", "Ship From Overseas", "Straw", "Summer", "Trendsi"],
+        "descriptionHtml": "<p>Handwoven from natural straw with a bold contrast stripe.</p>",
+        "totalInventory": 17,
+        "createdAt": "2026-07-15T22:45:26Z",
+        "updatedAt": "2026-07-26T14:04:39Z",
+        "featuredMedia": {
+          "preview": {
+            "image": {
+              "url": "https://cdn.shopify.com/s/files/1/0774/5634/3229/files/7245f392-8dba-4eeb-8f9d-daccbfb5704e-Max.webp?v=1784155528"
+            }
+          }
+        },
+        "collections": {
+          "nodes": [
+            {
+              "id": "gid://shopify/Collection/340308000957",
+              "title": "Resort Wear",
+              "handle": "resort-wear"
+            },
+            {
+              "id": "gid://shopify/Collection/340308033725",
+              "title": "Accessories",
+              "handle": "accessories"
+            }
+          ]
+        },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/47653818695869",
+              "sku": "TRD-389533-BLACK",
+              "title": "Black",
+              "price": "34.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 17,
+              "selectedOptions": [{ "name": "Color", "value": "Black" }]
+            }
+          ]
+        }
+      },
+      {
+        "id": "gid://shopify/Product/8378058997949",
+        "title": "One-Shoulder Ruched Maxi Dress",
+        "handle": "one-shoulder-ruched-maxi-dress",
+        "status": "ACTIVE",
+        "vendor": "Trendsi",
+        "productType": "Dress",
+        "tags": ["Belinda", "Ship From Overseas"],
+        "descriptionHtml": "<p>Asymmetrical, softly ruched and fully lined.</p>",
+        "totalInventory": 558,
+        "createdAt": "2026-07-03T07:06:29Z",
+        "updatedAt": "2026-07-22T23:04:27Z",
+        "featuredMedia": {
+          "preview": {
+            "image": {
+              "url": "https://cdn.shopify.com/s/files/1/0774/5634/3229/files/b2424f9c-c816-4773-a6bb-204df2d460da-Max-Origin.webp?v=1783062392"
+            }
+          }
+        },
+        "collections": {
+          "nodes": [
+            {
+              "id": "gid://shopify/Collection/336711581885",
+              "title": "Home page",
+              "handle": "frontpage"
+            },
+            {
+              "id": "gid://shopify/Collection/340307935421",
+              "title": "Dresses",
+              "handle": "dresses"
+            }
+          ]
+        },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/47268041490621",
+              "sku": "100100331278451",
+              "title": "Apricot / S",
+              "price": "79.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 19,
+              "selectedOptions": [
+                { "name": "Color", "value": "Apricot" },
+                { "name": "Size", "value": "S" }
+              ]
+            },
+            {
+              "id": "gid://shopify/ProductVariant/47268041523389",
+              "sku": "100100331272779",
+              "title": "Apricot / M",
+              "price": "79.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 20,
+              "selectedOptions": [
+                { "name": "Color", "value": "Apricot" },
+                { "name": "Size", "value": "M" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "gid://shopify/Product/8388281860285",
+        "title": "Off-Shoulder Bodycon Mini Dress",
+        "handle": "off-shoulder-bodycon-mini-dress",
+        "status": "ACTIVE",
+        "vendor": "Trendsi",
+        "productType": "Dress",
+        "tags": ["Bally Love", "Ship From Overseas"],
+        "descriptionHtml": "<p>An off-shoulder neckline, a backless cut and a stretch fabric that follows every line.</p>",
+        "totalInventory": 400,
+        "createdAt": "2026-07-09T21:10:31Z",
+        "updatedAt": "2026-07-26T14:04:24Z",
+        "featuredMedia": {
+          "preview": {
+            "image": {
+              "url": "https://cdn.shopify.com/s/files/1/0774/5634/3229/files/66e9ad7c-28f7-4d23-993b-76a96ee8f1d6-Max-Origin.webp?v=1783631433"
+            }
+          }
+        },
+        "collections": {
+          "nodes": [
+            {
+              "id": "gid://shopify/Collection/340307935421",
+              "title": "Dresses",
+              "handle": "dresses"
+            }
+          ]
+        },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/47623169310909",
+              "sku": "100100321090811",
+              "title": "White / S",
+              "price": "32.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 20,
+              "selectedOptions": [
+                { "name": "Color", "value": "White" },
+                { "name": "Size", "value": "S" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "gid://shopify/Product/8396731744445",
+        "title": "Eyelet Grecian Neck Mini Dress",
+        "handle": "eyelet-grecian-neck-mini-dress",
+        "status": "DRAFT",
+        "vendor": "Trendsi",
+        "productType": "Dress",
+        "tags": ["Eyelet", "Mini Dress", "Resort Wear", "Ship From Overseas", "Trendsi"],
+        "descriptionHtml": "<p>Crisp white eyelet fabric and a graceful grecian neckline.</p>",
+        "totalInventory": 0,
+        "createdAt": "2026-07-13T22:31:28Z",
+        "updatedAt": "2026-07-26T14:02:21Z",
+        "featuredMedia": {
+          "preview": {
+            "image": {
+              "url": "https://cdn.shopify.com/s/files/1/0774/5634/3229/files/cde05469-4e70-473e-b972-b177ba85e86a-Max.webp?v=1783981893"
+            }
+          }
+        },
+        "collections": {
+          "nodes": [
+            {
+              "id": "gid://shopify/Collection/340307935421",
+              "title": "Dresses",
+              "handle": "dresses"
+            },
+            {
+              "id": "gid://shopify/Collection/340308000957",
+              "title": "Resort Wear",
+              "handle": "resort-wear"
+            }
+          ]
+        },
+        "variants": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductVariant/47641288376509",
+              "sku": "TRD-80634-S",
+              "title": "S",
+              "price": "59.99",
+              "compareAtPrice": null,
+              "inventoryQuantity": 0,
+              "selectedOptions": [{ "name": "Size", "value": "S" }]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
