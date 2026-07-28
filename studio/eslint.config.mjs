@@ -17,6 +17,22 @@ export default [
   },
   js.configs.recommended,
   {
+    // Plain JavaScript run directly by node: the setup script, and the config
+    // files. They are Node programs, so they get Node's globals.
+    files: ['**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsparser,

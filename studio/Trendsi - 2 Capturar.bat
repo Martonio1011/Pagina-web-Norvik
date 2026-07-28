@@ -20,7 +20,7 @@ echo.
 where node >nul 2>nul
 if errorlevel 1 goto :no_node
 
-if not exist "node_modules" goto :not_installed
+if not exist "node_modules\next" goto :not_installed
 
 if not exist ".trendsi-session" goto :no_session
 

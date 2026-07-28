@@ -28,16 +28,26 @@ for /f "tokens=*" %%v in ('node --version') do set NODE_VERSION=%%v
 echo   [1/4] Node.js %NODE_VERSION% detectado.
 
 REM --- Step 2: dependencies --------------------------------------------------
-if exist "node_modules" goto :deps_ready
-echo   [2/4] Primera vez: instalando lo que necesita la aplicacion.
-echo         Esto tarda un par de minutos. Solo pasa una vez.
+REM
+REM  Checking that the node_modules FOLDER exists is not enough, and getting
+REM  this wrong cost a real user a confusing failure: a half-finished npm
+REM  install leaves the folder behind, so the launcher skipped installing and
+REM  the app then died on a missing package. What is checked instead is that
+REM  the packages the app actually needs are present.
+if not exist "node_modules\next" goto :deps_missing
+if not exist "node_modules\@libsql\client" goto :deps_missing
+if not exist "node_modules\drizzle-orm" goto :deps_missing
+echo   [2/4] Dependencias ya instaladas.
+goto :deps_done
+
+:deps_missing
+echo   [2/4] Instalando lo que necesita la aplicacion.
+echo         Tarda un par de minutos. Solo pasa la primera vez.
 echo.
 call npm install
 if errorlevel 1 goto :install_failed
-goto :deps_done
-
-:deps_ready
-echo   [2/4] Dependencias ya instaladas.
+if not exist "node_modules\next" goto :install_incomplete
+echo.
 
 :deps_done
 
@@ -60,6 +70,25 @@ goto :env_done
 echo   [3/4] Configuracion encontrada.
 
 :env_done
+
+REM --- Step 3b: database ------------------------------------------------------
+REM  Run it here rather than leaving it to `predev`, so a failure is reported
+REM  with an explanation instead of scrolling past inside the dev server's own
+REM  output.
+call npm run setup
+if errorlevel 1 goto :setup_retry
+goto :setup_ok
+
+:setup_retry
+echo.
+echo   Algo falta. Reinstalando y reintentando una vez.
+echo.
+call npm install
+if errorlevel 1 goto :install_failed
+call npm run setup
+if errorlevel 1 goto :setup_failed
+
+:setup_ok
 
 REM --- Step 4: start ---------------------------------------------------------
 echo   [4/4] Arrancando. El navegador se abrira solo en unos segundos.
@@ -93,6 +122,26 @@ echo   Cuando termine, cierra esta ventana y vuelve a hacer doble clic aqui.
 echo.
 pause
 start "" https://nodejs.org/es/download
+exit /b 1
+
+:install_incomplete
+echo.
+echo   LA INSTALACION HA QUEDADO A MEDIAS
+echo.
+echo   Se han descargado algunos paquetes pero no todos. Casi siempre es la
+echo   conexion. Borra la carpeta "node_modules" y vuelve a hacer doble clic
+echo   aqui para empezar de cero.
+echo.
+pause
+exit /b 1
+
+:setup_failed
+echo.
+echo   NO SE HA PODIDO PREPARAR LA BASE DE DATOS
+echo.
+echo   Copia el texto de mas arriba y pegamelo, y lo miro.
+echo.
+pause
 exit /b 1
 
 :install_failed
