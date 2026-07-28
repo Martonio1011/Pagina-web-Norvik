@@ -24,7 +24,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "verify": "npm run typecheck && npm run lint && npm run test",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "trendsi:login": "tsx src/scripts/trendsi-login.ts",
+    "trendsi:capture": "tsx src/scripts/trendsi-capture.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
@@ -34,6 +36,7 @@
     "exceljs": "^4.4.0",
     "next": "^16.2.12",
     "pino": "^10.3.1",
+    "playwright": "^1.62.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "server-only": "^0.0.1",

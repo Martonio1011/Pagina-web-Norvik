@@ -30,3 +30,10 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 next-env.d.ts
+
+# Marker written by the Windows launcher once the browser is downloaded
+.playwright-ready
+
+# Captured Trendsi responses are written here by the capture step.
+# The recordings themselves are meant to be committed once reviewed;
+# this ignores nothing by default and is a reminder of where they land.
