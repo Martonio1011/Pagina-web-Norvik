@@ -16,7 +16,8 @@ tienda de Shopify y a los proveedores.
 | Fase | Qué incluye | Estado |
 | --- | --- | --- |
 | **1. Cimientos** | Base de datos, sincronización con Shopify, panel, catálogo y auditoría de precios | ✅ Terminada |
-| 2. Ingesta Trendsi | Sesión persistente, búsquedas guardadas, explorador de candidatos | Pendiente |
+| **2a. Sesión y captura de Trendsi** | Login manual guardado, límite de peticiones, caché, detección de sesión caducada y de «sin resultados», grabación de respuestas reales | ✅ Terminada |
+| 2b. Parsers de Trendsi | Interpretar las respuestas grabadas y guardar productos | Esperando a la primera captura |
 | 3. Inteligencia | Brand Fit Score, economía por producto, duplicados, cola de decisión, exportación | Pendiente |
 | 4. Automatización | Creación en Shopify como borrador, alertas, ejecuciones programadas | Pendiente |
 | 5. Competencia | Adaptadores por tienda, informe semanal de tendencias | Pendiente |
@@ -110,6 +111,58 @@ tendrás tu catálogo real en pantalla.
   asignable. Cada aviso trae los números en los que se basa.
 - **Ejecuciones** — la traza de cada sincronización: cuánto tardó, cuántos
   elementos leyó y cada error que encontró, con su detalle técnico.
+
+---
+
+## Conectar con Trendsi
+
+Trendsi no tiene una forma automática de entrar: su catálogo está detrás de un
+login. Así que hay un paso, y solo uno, que tienes que hacer tú a mano. Se hace
+una vez y la sesión queda guardada.
+
+**Tu contraseña no pasa nunca por esta aplicación.** Se abre una ventana de
+Chrome normal y la escribes ahí, igual que cuando entras en Trendsi desde el
+navegador.
+
+### Paso 1 — Conectar
+
+Doble clic en **`Trendsi - 1 Conectar.bat`**.
+
+1. La primera vez descarga el navegador que necesita. Tarda un poco y solo
+   ocurre una vez.
+2. Se abre una ventana de Chrome en la página de Trendsi.
+3. Escribe tu email y tu contraseña y entra como siempre.
+4. **No cierres la ventana.** El programa detecta solo que ya has entrado, la
+   cierra él y te dice «Sesión guardada correctamente».
+
+Si aparece una verificación de seguridad, la aplicación se detiene y te avisa.
+No intenta resolverla ni saltársela: eso no se hace.
+
+### Paso 2 — Capturar
+
+Doble clic en **`Trendsi - 2 Capturar.bat`**.
+
+Hace cinco búsquedas cortas, esperando unos segundos entre cada una para no
+molestar a los servidores de Trendsi, y guarda lo que Trendsi responde en la
+carpeta `fixtures\trendsi`. Al terminar te abre esa carpeta.
+
+Verás dos archivos por búsqueda:
+
+- `search-....json` — la respuesta completa, **con tus datos personales ya
+  borrados** (email, teléfono, dirección: todo eso se sustituye por
+  `[redactado]` antes de guardar nada).
+- `search-...-RESUMEN.txt` — un resumen legible que describe la *forma* de los
+  datos, sin los valores.
+
+Esos archivos son lo que hace falta para escribir el lector del catálogo. Sin
+ellos habría que adivinar la estructura, y una estructura adivinada que acaba
+en la base de datos es mucho peor que una función que falta.
+
+### Por qué este paso no se puede automatizar
+
+Trendsi no publica ninguna API. No es una limitación de esta aplicación: no
+existe forma legítima de entrar sin que una persona escriba sus credenciales.
+Lo que sí está automatizado es todo lo demás.
 
 ---
 
