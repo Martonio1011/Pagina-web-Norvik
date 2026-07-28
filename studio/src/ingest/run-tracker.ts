@@ -45,21 +45,19 @@ export class RunTracker {
     this.id = id;
   }
 
-  static start(
+  static async start(
     source: IngestSource,
     options: { params?: unknown; dryRun?: boolean } = {},
-  ): RunTracker {
+  ): Promise<RunTracker> {
     const id = randomUUID();
-    db.insert(ingestRuns)
-      .values({
-        id,
-        source,
-        status: 'RUNNING',
-        startedAt: new Date(),
-        params: options.params ? JSON.stringify(options.params) : null,
-        dryRun: options.dryRun ?? false,
-      })
-      .run();
+    await db.insert(ingestRuns).values({
+      id,
+      source,
+      status: 'RUNNING',
+      startedAt: new Date(),
+      params: options.params ? JSON.stringify(options.params) : null,
+      dryRun: options.dryRun ?? false,
+    });
 
     log.info({ runId: id, source, dryRun: options.dryRun ?? false }, 'ingestion run started');
     return new RunTracker(id, source, options.dryRun ?? false);
@@ -76,12 +74,12 @@ export class RunTracker {
    * one competitor store that is down — where stopping the whole run would be
    * a worse outcome than finishing with a reported gap.
    */
-  recordError(input: {
+  async recordError(input: {
     stage: IngestStage;
     message: string;
     target?: string | null;
     detail?: unknown;
-  }): void {
+  }): Promise<void> {
     this.errorCount += 1;
 
     const detail =
@@ -93,17 +91,15 @@ export class RunTracker {
             ? input.detail
             : JSON.stringify(input.detail).slice(0, 4000);
 
-    db.insert(ingestErrors)
-      .values({
-        id: randomUUID(),
-        runId: this.id,
-        stage: input.stage,
-        target: input.target ?? null,
-        message: input.message,
-        detail,
-        createdAt: new Date(),
-      })
-      .run();
+    await db.insert(ingestErrors).values({
+      id: randomUUID(),
+      runId: this.id,
+      stage: input.stage,
+      target: input.target ?? null,
+      message: input.message,
+      detail,
+      createdAt: new Date(),
+    });
 
     log.warn(
       { runId: this.id, stage: input.stage, target: input.target },
@@ -117,11 +113,12 @@ export class RunTracker {
    * When no status is given the run works out its own: clean if nothing
    * failed, PARTIAL if something did. A run that saw errors never reports OK.
    */
-  finish(status?: IngestStatus, notes?: string): IngestStatus {
+  async finish(status?: IngestStatus, notes?: string): Promise<IngestStatus> {
     const resolved: IngestStatus = status ?? (this.errorCount > 0 ? 'PARTIAL' : 'OK');
     const durationMs = Date.now() - this.startedAt;
 
-    db.update(ingestRuns)
+    await db
+      .update(ingestRuns)
       .set({
         status: resolved,
         finishedAt: new Date(),
@@ -130,8 +127,7 @@ export class RunTracker {
         notes: notes ?? null,
         ...this.counters,
       })
-      .where(eq(ingestRuns.id, this.id))
-      .run();
+      .where(eq(ingestRuns.id, this.id));
 
     log.info(
       { runId: this.id, status: resolved, durationMs, errors: this.errorCount, ...this.counters },
@@ -141,10 +137,10 @@ export class RunTracker {
   }
 
   /** Closes the run as a hard failure, keeping the reason. */
-  fail(error: unknown, status: IngestStatus = 'FAILED'): never {
+  async fail(error: unknown, status: IngestStatus = 'FAILED'): Promise<never> {
     const message = error instanceof Error ? error.message : String(error);
-    this.recordError({ stage: 'FETCH', message, detail: error });
-    this.finish(status, message);
+    await this.recordError({ stage: 'FETCH', message, detail: error });
+    await this.finish(status, message);
     throw error instanceof Error ? error : new Error(message);
   }
 

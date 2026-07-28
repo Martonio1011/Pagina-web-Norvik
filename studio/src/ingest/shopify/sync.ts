@@ -54,7 +54,7 @@ export async function syncShopify(
 ): Promise<SyncResult> {
   const client = options.client ?? new ShopifyClient();
   const includeSales = options.includeSales ?? true;
-  const run = RunTracker.start('SHOPIFY', {
+  const run = await RunTracker.start('SHOPIFY', {
     params: { store: client.storeDomain, apiVersion: client.apiVersion, includeSales },
   });
 
@@ -83,14 +83,14 @@ export async function syncShopify(
     }
   } catch (error) {
     if (error instanceof ShopifyAuthError) {
-      run.recordError({ stage: 'AUTH', message: error.message, detail: error });
-      run.finish('FAILED', error.message);
+      await run.recordError({ stage: 'AUTH', message: error.message, detail: error });
+      await run.finish('FAILED', error.message);
       throw error;
     }
-    run.fail(error);
+    await run.fail(error);
   }
 
-  const status = run.finish();
+  const status = await run.finish();
 
   return {
     runId: run.id,
@@ -122,13 +122,13 @@ async function syncCollections(client: ShopifyClient, run: RunTracker): Promise<
 
     for (const node of page.collections.nodes) {
       const row = mapCollection(node);
-      db.insert(shopifyCollections)
+      await db
+        .insert(shopifyCollections)
         .values(row)
         .onConflictDoUpdate({
           target: shopifyCollections.id,
           set: { title: row.title, handle: row.handle, productsCount: row.productsCount },
-        })
-        .run();
+        });
       seen += 1;
     }
 
@@ -159,7 +159,7 @@ async function syncProducts(
       run.count('itemsSeen');
       try {
         const mapped = mapProduct(node);
-        const isNew = persistProduct(mapped);
+        const isNew = await persistProduct(mapped);
         if (isNew) {
           created += 1;
           run.count('itemsNew');
@@ -168,7 +168,7 @@ async function syncProducts(
           run.count('itemsUpdated');
         }
       } catch (error) {
-        run.recordError({
+        await run.recordError({
           stage: error instanceof Error && error.name === 'MoneyParseError' ? 'PARSE' : 'PERSIST',
           target: node.id,
           message: `Could not store "${node.title}": ${error instanceof Error ? error.message : String(error)}`,
@@ -186,15 +186,15 @@ async function syncProducts(
 }
 
 /** Writes one product with its variants and collection links. Returns true if new. */
-function persistProduct(mapped: MappedProduct): boolean {
-  return db.transaction((tx) => {
-    const existing = tx
+async function persistProduct(mapped: MappedProduct): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const existing = await tx
       .select({ id: shopifyProducts.id })
       .from(shopifyProducts)
-      .where(eq(shopifyProducts.id, mapped.product.id))
-      .get();
+      .where(eq(shopifyProducts.id, mapped.product.id));
 
-    tx.insert(shopifyProducts)
+    await tx
+      .insert(shopifyProducts)
       .values(mapped.product)
       .onConflictDoUpdate({
         target: shopifyProducts.id,
@@ -211,45 +211,44 @@ function persistProduct(mapped: MappedProduct): boolean {
           updatedAt: mapped.product.updatedAt,
           syncedAt: mapped.product.syncedAt,
         },
-      })
-      .run();
+      });
 
     // Variants and collection links are replaced wholesale: a variant removed
     // upstream has to disappear here too, and an upsert alone would leave it
     // behind for ever.
-    tx.delete(shopifyVariants).where(eq(shopifyVariants.productId, mapped.product.id)).run();
+    await tx.delete(shopifyVariants).where(eq(shopifyVariants.productId, mapped.product.id));
     if (mapped.variants.length > 0) {
-      tx.insert(shopifyVariants).values(mapped.variants).run();
+      await tx.insert(shopifyVariants).values(mapped.variants);
     }
 
     for (const collection of mapped.collections) {
-      tx.insert(shopifyCollections)
+      await tx
+        .insert(shopifyCollections)
         .values({
           id: collection.id,
           title: collection.title,
           handle: collection.handle,
           productsCount: 0,
         })
-        .onConflictDoNothing()
-        .run();
+        .onConflictDoNothing();
     }
 
-    tx.delete(shopifyProductCollections)
-      .where(eq(shopifyProductCollections.productId, mapped.product.id))
-      .run();
+    await tx
+      .delete(shopifyProductCollections)
+      .where(eq(shopifyProductCollections.productId, mapped.product.id));
     if (mapped.collectionIds.length > 0) {
-      tx.insert(shopifyProductCollections)
+      await tx
+        .insert(shopifyProductCollections)
         .values(
           mapped.collectionIds.map((collectionId) => ({
             productId: mapped.product.id,
             collectionId,
           })),
         )
-        .onConflictDoNothing()
-        .run();
+        .onConflictDoNothing();
     }
 
-    return existing === undefined;
+    return existing.length === 0;
   });
 }
 
@@ -275,15 +274,13 @@ async function syncSales(
         if (sales.length === 0) continue;
 
         // Replacing by line-item id keeps a re-run idempotent.
-        db.delete(shopifySales)
-          .where(
-            inArray(
-              shopifySales.id,
-              sales.map((sale) => sale.id),
-            ),
-          )
-          .run();
-        db.insert(shopifySales).values(sales).run();
+        await db.delete(shopifySales).where(
+          inArray(
+            shopifySales.id,
+            sales.map((sale) => sale.id),
+          ),
+        );
+        await db.insert(shopifySales).values(sales);
         rows += sales.length;
       }
 
@@ -299,7 +296,7 @@ async function syncSales(
       error instanceof ShopifyAuthError
         ? `Sales history skipped: the app's token lacks the read_orders scope.`
         : `Sales history skipped: ${error instanceof Error ? error.message : String(error)}`;
-    run.recordError({ stage: 'AUTH', message, target: 'orders', detail: error });
+    await run.recordError({ stage: 'AUTH', message, target: 'orders', detail: error });
     return { rows, skippedReason: message };
   }
 

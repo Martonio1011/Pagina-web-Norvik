@@ -8,8 +8,8 @@ import { seedDatabaseFromFixture } from '../helpers/seed-fixture';
  * already running by this point and holds an open handle to it, and deleting
  * the file would leave that handle pointing at an inode nothing else can see.
  */
-export default function globalSetup(): void {
+export default async function globalSetup(): Promise<void> {
   const database = resolve(process.cwd(), 'e2e.db');
-  const { productCount, variantCount } = seedDatabaseFromFixture(database);
+  const { productCount, variantCount } = await seedDatabaseFromFixture(database);
   console.warn(`  e2e database ready: ${productCount} products, ${variantCount} variants`);
 }

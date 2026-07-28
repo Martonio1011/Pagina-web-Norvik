@@ -14,9 +14,9 @@ export const dynamic = 'force-dynamic';
  * plainly and offers the one action that fixes it, rather than showing zeroes
  * that look like real measurements of an empty store.
  */
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const shopify = getShopifyEnv();
-  const overview = getCatalogOverview();
+  const overview = await getCatalogOverview();
 
   if (overview.totalProducts === 0) {
     return (

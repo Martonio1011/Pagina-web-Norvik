@@ -75,13 +75,42 @@ adicionales, arranque más rápido, y unas 50 MB menos de dependencias.
 Las migraciones se generan como SQL plano en `drizzle/` y se versionan, así que
 una revisión muestra exactamente el SQL que se va a ejecutar.
 
-### El driver
+### El driver: `@libsql/client`, no `better-sqlite3`
 
-`better-sqlite3`, síncrono. En una aplicación local de un solo usuario la
-asincronía sobre SQLite no aporta nada y complica cada consulta. Se activa
-`journal_mode = WAL` para que la interfaz pueda leer mientras una ingesta larga
-escribe, y `foreign_keys = ON` porque SQLite las trae desactivadas de fábrica y
-el esquema está lleno de borrados en cascada que, si no, no ocurrirían.
+La primera versión de esta capa usaba `better-sqlite3`, síncrono, que en una
+aplicación local de un solo usuario tiene sentido: la asincronía sobre SQLite no
+aporta nada y complica cada consulta. Se cambió a `@libsql/client` (async) tras
+un fallo real al probar la aplicación en un ordenador Windows sin herramientas
+de compilación, y merece explicarse porque el motivo no es de gustos.
+
+**Lo que pasó.** `better-sqlite3` incluye un binario ya compilado para Windows
+dentro de su propio paquete npm (`prebuilds/win32-x64.node`) — en teoría no hace
+falta compilar nada. Pero npm tiene un comportamiento heredado: si un paquete
+contiene un `binding.gyp` y no define su propio script `install`, npm asume por
+su cuenta que hay que compilarlo con `node-gyp rebuild`, sin comprobar antes si
+ya existe un binario válido para la plataforma. `better-sqlite3` no define ese
+script de instalación, así que en un Windows sin Python ni un compilador de C++
+instalados — el caso normal de un ordenador que no es de programador — la
+instalación falla con un volcado de errores de `node-gyp`, aunque el binario
+que hacía falta ya estuviera ahí dentro del paquete. Se reprodujo el mismo
+fallo en el entorno de desarrollo antes de decidir el cambio.
+
+`@libsql/client` no tiene este problema: publica su binario nativo como un
+paquete de npm normal por plataforma (`optionalDependency`), sin ningún
+`binding.gyp` de por medio, así que `npm install` nunca intenta compilar nada.
+
+**El coste.** Las consultas pasan a ser asíncronas. Todo lo que antes terminaba
+en `.all()` o `.get()` ahora se resuelve con `await`, y las páginas de Next.js
+son `async function Page()`. Es un cambio mecánico pero real: se tocaron
+`src/db/index.ts`, `src/server/catalog.ts`, `src/ingest/run-tracker.ts`,
+`src/ingest/shopify/sync.ts` (incluida la transacción de `persistProduct`,
+verificada con transacciones async reales antes de reescribirla) y las cinco
+páginas del App Router.
+
+Se activa `journal_mode = WAL` para que la interfaz pueda leer mientras una
+ingesta larga escribe, y `foreign_keys = ON` porque SQLite las trae desactivadas
+de fábrica y el esquema está lleno de borrados en cascada que, si no, no
+ocurrirían.
 
 ---
 

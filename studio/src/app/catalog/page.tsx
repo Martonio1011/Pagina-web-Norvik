@@ -17,9 +17,9 @@ export const dynamic = 'force-dynamic';
  * shows an explicit "sin imagen" panel, because a fake thumbnail is worse than
  * an honest gap.
  */
-export default function CatalogPage() {
+export default async function CatalogPage() {
   const shopify = getShopifyEnv();
-  const products = getCatalogProducts();
+  const products = await getCatalogProducts();
   const sections = loadSections();
 
   if (products.length === 0) {

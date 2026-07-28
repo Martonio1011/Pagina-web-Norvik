@@ -23,8 +23,8 @@ const SEVERITY_LABEL: Record<string, string> = {
  * Each finding carries the numbers it was derived from, so a claim like
  * "priced above the band" can be checked without leaving the page.
  */
-export default function AuditPage() {
-  const overview = getCatalogOverview();
+export default async function AuditPage() {
+  const overview = await getCatalogOverview();
 
   if (overview.totalProducts === 0) {
     return (

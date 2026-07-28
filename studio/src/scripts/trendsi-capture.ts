@@ -79,7 +79,7 @@ say(`  Se van a hacer ${queries.length} búsquedas, esperando ~${delaySeconds}s 
 say('  Se abrirá una ventana de Chrome. Déjala abierta y no toques nada.');
 say();
 
-const run = RunTracker.start('TRENDSI', { params: { queries, mode: 'capture' } });
+const run = await RunTracker.start('TRENDSI', { params: { queries, mode: 'capture' } });
 
 /** Opens the browser, or explains why it could not and stops. */
 async function openBrowserOrExit(): Promise<import('playwright').BrowserContext> {
@@ -91,14 +91,14 @@ async function openBrowserOrExit(): Promise<import('playwright').BrowserContext>
       say();
       for (const line of error.hint.split('\n')) say(`    ${line}`);
       say();
-      run.recordError({ stage: 'FETCH', message: error.message, detail: error.hint });
-      run.finish('FAILED', error.message);
+      await run.recordError({ stage: 'FETCH', message: error.message, detail: error.hint });
+      await run.finish('FAILED', error.message);
       process.exit(1);
     }
     // `run.fail` records the failure and rethrows. The throw below is
     // unreachable; it is here because the dynamic import loses the `never`
     // return type and the compiler cannot see that this branch ends.
-    run.fail(error);
+    await run.fail(error);
     throw error;
   }
 }
@@ -118,8 +118,8 @@ try {
       say('    y después repite esta captura.');
     }
     say();
-    run.recordError({ stage: 'AUTH', message: describeState(state), target: 'session' });
-    run.finish(state === 'SESSION_EXPIRED' ? 'SESSION_EXPIRED' : 'BLOCKED');
+    await run.recordError({ stage: 'AUTH', message: describeState(state), target: 'session' });
+    await run.finish(state === 'SESSION_EXPIRED' ? 'SESSION_EXPIRED' : 'BLOCKED');
     await context.close();
     process.exit(1);
   }
@@ -148,7 +148,7 @@ try {
       const pageState = await observePage(page);
       if (pageState === 'CAPTCHA') {
         say('  ⚠ Ha aparecido una verificación de seguridad. Se detiene aquí.');
-        run.recordError({ stage: 'FETCH', message: 'captcha shown', target: url });
+        await run.recordError({ stage: 'FETCH', message: 'captcha shown', target: url });
         recorder.stop();
         break;
       }
@@ -182,7 +182,7 @@ try {
       if (outcome === 'NO_RESULTS') {
         // Recorded on purpose: a term that finds nothing is worth knowing
         // about, and it is not an error.
-        run.recordError({
+        await run.recordError({
           stage: 'PARSE',
           message: `La búsqueda "${query}" no devolvió resultados propios de Trendsi.`,
           target: url,
@@ -192,14 +192,14 @@ try {
       recorder.stop();
       const message = error instanceof Error ? error.message : String(error);
       say(`    ✗ Falló: ${message}`);
-      run.recordError({ stage: 'FETCH', message, target: url, detail: error });
+      await run.recordError({ stage: 'FETCH', message, target: url, detail: error });
     }
   }
 } finally {
   await context.close();
 }
 
-const status = run.finish();
+const status = await run.finish();
 
 say();
 if (captureCount > 0) {

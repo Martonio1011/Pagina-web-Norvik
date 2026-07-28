@@ -19,8 +19,8 @@ const STATUS_TONE: Record<string, 'good' | 'warn' | 'bad' | 'info'> = {
  * This is the app's memory of what it did and what went wrong doing it. A run
  * that saw errors never shows as OK.
  */
-export default function RunsPage() {
-  const runs = getRuns();
+export default async function RunsPage() {
+  const runs = await getRuns();
 
   if (runs.length === 0) {
     return (

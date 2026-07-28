@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { createClient } from '@libsql/client';
+import { drizzle } from 'drizzle-orm/libsql';
+import { migrate } from 'drizzle-orm/libsql/migrator';
 import * as schema from '@/db/schema';
 import { mapProduct } from '@/ingest/shopify/map';
 import { productsResponseSchema } from '@/ingest/shopify/schemas';
@@ -15,15 +15,13 @@ import { productsResponseSchema } from '@/ingest/shopify/schemas';
  * throwaway database file. The app itself ships with no sample content at all.
  */
 
-export function seedDatabaseFromFixture(databasePath: string): {
-  productCount: number;
-  variantCount: number;
-} {
-  const sqlite = new Database(databasePath);
-  sqlite.pragma('foreign_keys = ON');
-  const db = drizzle(sqlite, { schema });
+export async function seedDatabaseFromFixture(
+  databasePath: string,
+): Promise<{ productCount: number; variantCount: number }> {
+  const client = createClient({ url: `file:${databasePath}` });
+  const db = drizzle(client, { schema });
 
-  migrate(db, { migrationsFolder: resolve(process.cwd(), 'drizzle') });
+  await migrate(db, { migrationsFolder: resolve(process.cwd(), 'drizzle') });
 
   const raw: unknown = JSON.parse(
     readFileSync(resolve(process.cwd(), 'fixtures/shopify/products-2026-07-27.json'), 'utf8'),
@@ -31,52 +29,50 @@ export function seedDatabaseFromFixture(databasePath: string): {
   const nodes = productsResponseSchema.parse(raw).products.nodes;
 
   // Start from a clean slate so a re-run is idempotent.
-  db.delete(schema.shopifyProductCollections).run();
-  db.delete(schema.shopifyVariants).run();
-  db.delete(schema.shopifyProducts).run();
-  db.delete(schema.shopifyCollections).run();
-  db.delete(schema.ingestErrors).run();
-  db.delete(schema.ingestRuns).run();
+  await db.delete(schema.shopifyProductCollections);
+  await db.delete(schema.shopifyVariants);
+  await db.delete(schema.shopifyProducts);
+  await db.delete(schema.shopifyCollections);
+  await db.delete(schema.ingestErrors);
+  await db.delete(schema.ingestRuns);
 
   let variantCount = 0;
 
   for (const node of nodes) {
     const mapped = mapProduct(node);
 
-    db.insert(schema.shopifyProducts).values(mapped.product).run();
+    await db.insert(schema.shopifyProducts).values(mapped.product);
     if (mapped.variants.length > 0) {
-      db.insert(schema.shopifyVariants).values(mapped.variants).run();
+      await db.insert(schema.shopifyVariants).values(mapped.variants);
       variantCount += mapped.variants.length;
     }
 
     for (const collection of mapped.collections) {
-      db.insert(schema.shopifyCollections)
+      await db
+        .insert(schema.shopifyCollections)
         .values({ ...collection, productsCount: 0 })
-        .onConflictDoNothing()
-        .run();
-      db.insert(schema.shopifyProductCollections)
+        .onConflictDoNothing();
+      await db
+        .insert(schema.shopifyProductCollections)
         .values({ productId: mapped.product.id, collectionId: collection.id })
-        .onConflictDoNothing()
-        .run();
+        .onConflictDoNothing();
     }
   }
 
   // A run trace, so the dashboard's "last sync" panel has something real to
   // show rather than its empty state.
-  db.insert(schema.ingestRuns)
-    .values({
-      id: 'e2e-seed-run',
-      source: 'SHOPIFY',
-      status: 'OK',
-      startedAt: new Date('2026-07-27T10:00:00Z'),
-      finishedAt: new Date('2026-07-27T10:00:03Z'),
-      durationMs: 3000,
-      itemsSeen: nodes.length,
-      itemsNew: nodes.length,
-      requestCount: 3,
-    })
-    .run();
+  await db.insert(schema.ingestRuns).values({
+    id: 'e2e-seed-run',
+    source: 'SHOPIFY',
+    status: 'OK',
+    startedAt: new Date('2026-07-27T10:00:00Z'),
+    finishedAt: new Date('2026-07-27T10:00:03Z'),
+    durationMs: 3000,
+    itemsSeen: nodes.length,
+    itemsNew: nodes.length,
+    requestCount: 3,
+  });
 
-  sqlite.close();
+  client.close();
   return { productCount: nodes.length, variantCount };
 }

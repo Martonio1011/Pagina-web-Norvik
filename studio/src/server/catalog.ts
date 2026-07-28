@@ -48,13 +48,15 @@ export interface CatalogProduct {
   updatedAt: Date;
 }
 
-export function getCatalogProducts(): CatalogProduct[] {
-  const products = db.select().from(shopifyProducts).orderBy(desc(shopifyProducts.updatedAt)).all();
+export async function getCatalogProducts(): Promise<CatalogProduct[]> {
+  const products = await db.select().from(shopifyProducts).orderBy(desc(shopifyProducts.updatedAt));
   if (products.length === 0) return [];
 
-  const variants = db.select().from(shopifyVariants).all();
-  const links = db.select().from(shopifyProductCollections).all();
-  const collections = db.select().from(shopifyCollections).all();
+  const [variants, links, collections] = await Promise.all([
+    db.select().from(shopifyVariants),
+    db.select().from(shopifyProductCollections),
+    db.select().from(shopifyCollections),
+  ]);
   const collectionById = new Map(collections.map((collection) => [collection.id, collection]));
 
   const variantsByProduct = new Map<string, typeof variants>();
@@ -140,10 +142,10 @@ export interface CatalogOverview {
   } | null;
 }
 
-export function getCatalogOverview(): CatalogOverview {
-  const products = getCatalogProducts();
+export async function getCatalogOverview(): Promise<CatalogOverview> {
+  const products = await getCatalogProducts();
   const sections = loadSections();
-  const collections = db.select().from(shopifyCollections).all();
+  const collections = await db.select().from(shopifyCollections);
 
   const auditable = products
     // A product with no price cannot be compared against a band; it is
@@ -151,13 +153,12 @@ export function getCatalogOverview(): CatalogOverview {
     .filter((product) => product.minPriceCents >= 0)
     .map(toAuditable);
 
-  const lastSyncRow = db
+  const [lastSyncRow] = await db
     .select()
     .from(ingestRuns)
     .where(eq(ingestRuns.source, 'SHOPIFY'))
     .orderBy(desc(ingestRuns.startedAt))
-    .limit(1)
-    .get();
+    .limit(1);
 
   return {
     totalProducts: products.length,
@@ -204,11 +205,11 @@ export interface RunSummary {
   notes: string | null;
 }
 
-export function getRuns(limit = 30): RunSummary[] {
-  return db.select().from(ingestRuns).orderBy(desc(ingestRuns.startedAt)).limit(limit).all();
+export async function getRuns(limit = 30): Promise<RunSummary[]> {
+  return db.select().from(ingestRuns).orderBy(desc(ingestRuns.startedAt)).limit(limit);
 }
 
-export function getRun(id: string): {
+export async function getRun(id: string): Promise<{
   run: RunSummary;
   errors: {
     id: string;
@@ -217,16 +218,15 @@ export function getRun(id: string): {
     message: string;
     detail: string | null;
   }[];
-} | null {
-  const run = db.select().from(ingestRuns).where(eq(ingestRuns.id, id)).get();
+} | null> {
+  const [run] = await db.select().from(ingestRuns).where(eq(ingestRuns.id, id));
   if (!run) return null;
 
-  const errors = db
+  const errors = await db
     .select()
     .from(ingestErrors)
     .where(eq(ingestErrors.runId, id))
-    .orderBy(desc(ingestErrors.createdAt))
-    .all();
+    .orderBy(desc(ingestErrors.createdAt));
 
   return { run, errors };
 }
