@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { resolveSections, sectionsConfigSchema, type Section } from '@/domain/sections';
+import { brandRulesSchema, type BrandRules } from '@/domain/scoring';
 
 /**
  * Loads the versioned rule files from `config/`.
@@ -47,7 +48,26 @@ export function loadSections(): Section[] {
   return sectionsCache;
 }
 
+let brandRulesCache: BrandRules | null = null;
+
+export function loadBrandRules(): BrandRules {
+  if (brandRulesCache) return brandRulesCache;
+
+  const raw = readYaml('brand-rules.yaml');
+  const parsed = brandRulesSchema.safeParse(raw);
+  if (!parsed.success) {
+    const detail = parsed.error.issues
+      .map((issue) => `  • ${issue.path.join('.') || '(root)'}: ${issue.message}`)
+      .join('\n');
+    throw new ConfigError('brand-rules.yaml', detail);
+  }
+
+  brandRulesCache = parsed.data;
+  return brandRulesCache;
+}
+
 /** Test-only: forces the next call to re-read from disk. */
 export function resetConfigCache(): void {
   sectionsCache = null;
+  brandRulesCache = null;
 }

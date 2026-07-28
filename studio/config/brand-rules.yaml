@@ -1,0 +1,229 @@
+# ---------------------------------------------------------------------------
+# Reglas de encaje de marca de Norvik.
+#
+# Este archivo decide qué es "Norvik" y qué no. Es la pieza que convierte una
+# opinión sobre la marca en un número comparable entre productos.
+#
+# Está pensado para que lo edites tú sin tocar código: cambia un peso, añade
+# una palabra, y la aplicación puntúa distinto la próxima vez.
+#
+# Los términos van en INGLÉS porque es el idioma en el que Trendsi escribe sus
+# fichas de producto. Es contra ese texto contra el que se buscan.
+#
+# CÓMO FUNCIONA EL CÁLCULO
+#   El score va de 0 a 100 y se reparte entre cinco grupos según los pesos de
+#   abajo. Dentro de cada grupo, cada término encontrado suma o resta puntos;
+#   el resultado del grupo se limita a su peso máximo. Ningún grupo puede
+#   comerse el sitio de otro.
+#
+#   Las exclusiones son distintas: no restan, descartan. Un producto infantil
+#   no es "un producto con mala puntuación", es un producto que no va en esta
+#   tienda, y la aplicación deja de puntuarlo.
+# ---------------------------------------------------------------------------
+
+# Los cinco pesos deben sumar 100.
+weights:
+  materials: 30 # Tejidos y detalles. Lo que más define la marca.
+  silhouette: 25 # La forma de la prenda.
+  color: 15 # Colores con demanda comprobada.
+  priceFit: 20 # Si el precio viable cae dentro de la horquilla de su sección.
+  vocabulary: 10 # El tono de la ficha: cómo suena, no solo qué es.
+
+# ---------------------------------------------------------------------------
+# EXCLUSIONES DURAS
+#
+# Si aparece cualquiera de estos términos, el producto queda descartado y no
+# se le calcula puntuación. No es cuestión de margen: no es Norvik.
+# ---------------------------------------------------------------------------
+exclusions:
+  - terms: [kids, girls, toddler, baby, infant, children, childrens, youth]
+    reason: Ropa infantil
+  - terms: [mens, men's, for him, male, unisex tee, boyfriend fit]
+    reason: Ropa de hombre
+  - terms:
+      [activewear, athletic, workout, gym, yoga, sports bra, leggings set, jogger, sweatpants]
+    reason: Deportivo
+  - terms: [costume, cosplay, halloween, fancy dress]
+    reason: Disfraz
+  - terms: [christmas, xmas, santa, ugly sweater, holiday sweater, reindeer]
+    reason: Navideño
+  - terms: [lingerie, bodysuit thong, g-string, babydoll, teddy]
+    reason: Lencería
+
+# ---------------------------------------------------------------------------
+# MATERIALES Y DETALLES  (peso 30)
+# ---------------------------------------------------------------------------
+materials:
+  # Cada acierto suma estos puntos, hasta el máximo del grupo (30).
+  #
+  # CALIBRADO A PROPÓSITO: con dos aciertos se llena el grupo. Una prenda real
+  # tiene uno o dos tejidos que la definen —satén, o lino y encaje—, no tres.
+  # Si hicieran falta tres, un vestido de satén perfecto para la marca sacaría
+  # un tercio de este grupo y ningún producto pasaría nunca del 80, con lo que
+  # leerías un 70 como "regular" cuando en realidad es de lo mejor que hay.
+  pointsPerPositive: 15
+  # Los negativos pesan algo más que los positivos: un solo detalle que rompe
+  # la marca (lentejuelas) debe anular un acierto y sobrar.
+  pointsPerNegative: 18
+  positive:
+    - satin
+    - eyelet
+    - broderie
+    - linen
+    - ramie
+    - knit
+    - ribbed
+    - crochet
+    - pearl
+    - raffia
+    - straw
+    - lace
+    - gauze
+    - poplin
+    - cotton
+    - textured
+  negative:
+    - sequin
+    - sequined
+    - glitter
+    - rhinestone
+    - camo
+    - camouflage
+    - faux leather
+    - pleather
+    - vinyl
+    - pvc
+    - graphic print
+    - graphic tee
+    - tie-dye
+    - tie dye
+    - neon
+    - velvet burnout
+
+# ---------------------------------------------------------------------------
+# SILUETA  (peso 25)
+# ---------------------------------------------------------------------------
+silhouette:
+  # Igual que en materiales: dos aciertos llenan el grupo (25). "Maxi" y
+  # "halter" juntos ya describen la silueta entera de una prenda.
+  pointsPerPositive: 13
+  pointsPerNegative: 16
+  positive:
+    - maxi
+    - midi
+    - column
+    - a-line
+    - wide leg
+    - wide-leg
+    - halter
+    - cowl
+    - square neck
+    - off-shoulder maxi
+    - tiered
+    - flowy
+    - draped
+    - wrap
+    - puff sleeve
+  negative:
+    - bodycon
+    - mini bodycon
+    - cut-out
+    - cut out
+    - cutout
+    - crop top
+    - cropped cami
+    - micro mini
+    - ruched mini
+    - sheer mesh
+    - see-through
+    - backless mini
+
+# ---------------------------------------------------------------------------
+# COLOR  (peso 15)
+#
+# Los cinco colores con demanda comprobada en la tienda, con sus variantes
+# como los escribe Trendsi.
+# ---------------------------------------------------------------------------
+color:
+  # Dos colores de la paleta llenan el grupo (15).
+  pointsPerPositive: 8
+  pointsPerNegative: 8
+  positive:
+    - chocolate
+    - mocha
+    - espresso
+    - coffee
+    - wine
+    - burgundy
+    - merlot
+    - bordeaux
+    - black
+    - sage
+    - olive green
+    - matcha
+    - cream
+    - ivory
+    - off-white
+    - oatmeal
+    - beige
+  negative:
+    - hot pink
+    - lime
+    - neon green
+    - electric blue
+    - bright orange
+    - fuchsia
+
+# ---------------------------------------------------------------------------
+# VOCABULARIO  (peso 10)
+#
+# El tono de la ficha. Un producto que ya se describe con estas palabras
+# encaja en la tienda sin reescribirlo entero.
+# ---------------------------------------------------------------------------
+vocabulary:
+  # El más bajo de todos: el tono de la ficha se puede reescribir, el tejido no.
+  pointsPerPositive: 4
+  pointsPerNegative: 5
+  positive:
+    - effortless
+    - timeless
+    - elegant
+    - romantic
+    - resort
+    - vacation
+    - golden hour
+    - flattering
+    - refined
+    - understated
+    - feminine
+    - garden party
+    - brunch
+  negative:
+    - party girl
+    - club
+    - clubbing
+    - rave
+    - festival
+    - streetwear
+    - edgy
+    - baddie
+    - y2k
+
+# ---------------------------------------------------------------------------
+# ENCAJE DE PRECIO  (peso 20)
+#
+# No lleva diccionario: se calcula con la horquilla de la sección y el margen
+# objetivo, que están en sections.yaml.
+# ---------------------------------------------------------------------------
+priceFit:
+  # Puntuación cuando el PVP sugerido cae dentro de la horquilla Y alcanza el
+  # margen objetivo de la sección.
+  withinBandAndMargin: 20
+  # Dentro de la horquilla, pero sin llegar al margen objetivo.
+  withinBandBelowMargin: 12
+  # Fuera de la horquilla pero por encima del margen mínimo aceptable.
+  outsideBandAcceptableMargin: 6
+  # Ni horquilla ni margen mínimo.
+  neither: 0
+  # Cuando no hay coste todavía y no se puede calcular nada.
+  unknown: 0
