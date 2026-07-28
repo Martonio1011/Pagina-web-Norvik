@@ -12,6 +12,8 @@ const NAV = [
   { href: '/', label: 'Panel' },
   { href: '/catalog', label: 'Catálogo' },
   { href: '/candidates', label: 'Candidatos' },
+  { href: '/searches', label: 'Búsquedas' },
+  { href: '/alerts', label: 'Alertas' },
   { href: '/audit', label: 'Auditoría' },
   { href: '/brand', label: 'Encaje de marca' },
   { href: '/runs', label: 'Ejecuciones' },

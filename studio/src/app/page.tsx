@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getShopifyEnv } from '@/env';
 import { getCatalogOverview } from '@/server/catalog';
+import { getAlerts } from '@/server/alerts';
 import { formatCents } from '@/domain/money';
 import { Badge, EmptyState, PageHeader, Section, StatCard } from '@/components/ui';
 import { SyncButton } from '@/components/sync-button';
@@ -17,6 +18,7 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
   const shopify = getShopifyEnv();
   const overview = await getCatalogOverview();
+  const openAlerts = await getAlerts('OPEN');
 
   if (overview.totalProducts === 0) {
     return (
@@ -131,6 +133,44 @@ export default async function DashboardPage() {
           se editan las horquillas de precio.
         </p>
       </Section>
+
+      {openAlerts.length > 0 ? (
+        <Section
+          title="Alertas abiertas"
+          description="Rotura de stock, subidas de coste y precios fuera de sitio."
+          actions={
+            <Link href="/alerts" className="text-sm text-[var(--color-sage)] hover:underline">
+              Ver todas →
+            </Link>
+          }
+        >
+          <ul className="card divide-y divide-[var(--color-line)]">
+            {openAlerts.slice(0, 4).map((alert) => (
+              <li key={alert.id} className="px-5 py-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-sm">{alert.title}</p>
+                  <Badge
+                    tone={
+                      alert.severity === 'CRITICAL'
+                        ? 'bad'
+                        : alert.severity === 'WARNING'
+                          ? 'warn'
+                          : 'info'
+                    }
+                  >
+                    {alert.severity === 'CRITICAL'
+                      ? 'Crítico'
+                      : alert.severity === 'WARNING'
+                        ? 'Atención'
+                        : 'Info'}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{alert.body}</p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
 
       <Section
         title="Qué requiere tu atención"

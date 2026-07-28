@@ -7,6 +7,7 @@ import { formatCents, formatPercent } from '@/domain/money';
 import type { CandidateEvaluation } from '@/domain/candidate';
 import type { TrendsiProductFacts } from '@/domain/candidate';
 import { Badge } from './ui';
+import { CreateDraftButton } from './create-draft-button';
 import { ScoreBreakdownView } from './score-breakdown';
 
 const VERDICT_TONE: Record<string, 'good' | 'warn' | 'bad' | 'neutral'> = {
@@ -197,14 +198,24 @@ export function CandidateCard({
           />
 
           {decided ? (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => act('REOPEN')}
-              className="border border-[var(--color-line)] px-3 py-1.5 text-xs hover:bg-[var(--color-surface-sunk)] disabled:opacity-50"
-            >
-              Volver a la cola
-            </button>
+            <>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => act('REOPEN')}
+                className="border border-[var(--color-line)] px-3 py-1.5 text-xs hover:bg-[var(--color-surface-sunk)] disabled:opacity-50"
+              >
+                Volver a la cola
+              </button>
+
+              {currentStatus === 'APPROVED' && economics ? (
+                <CreateDraftButton
+                  trendsiProductId={facts.productId}
+                  title={facts.title}
+                  priceLabel={formatCents(economics.suggestedRetailCents)}
+                />
+              ) : null}
+            </>
           ) : (
             <>
               <button

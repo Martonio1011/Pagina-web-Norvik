@@ -32,6 +32,12 @@ const sectionSchema = z.object({
   targetMargin: z.number().min(0).max(0.95).optional(),
   collections: z.array(z.string()).default([]),
   match: matchRulesSchema,
+  /**
+   * Starting search terms. Copied into the database the first time the saved
+   * searches are created; after that the database is the live copy and this
+   * list is only the starting point.
+   */
+  seedTerms: z.array(z.string()).default([]),
 });
 
 export const sectionsConfigSchema = z
@@ -74,6 +80,7 @@ export interface Section {
   minAcceptableMarginPct: number;
   collections: string[];
   match: z.infer<typeof matchRulesSchema>;
+  seedTerms: string[];
 }
 
 export function resolveSections(config: SectionsConfigInput): Section[] {
@@ -88,6 +95,7 @@ export function resolveSections(config: SectionsConfigInput): Section[] {
     minAcceptableMarginPct: config.defaults.minAcceptableMarginPct,
     collections: section.collections,
     match: section.match,
+    seedTerms: section.seedTerms,
   }));
 }
 

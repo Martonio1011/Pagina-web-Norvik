@@ -18,9 +18,27 @@ tienda de Shopify y a los proveedores.
 | **1. Cimientos** | Base de datos, sincronización con Shopify, panel, catálogo y auditoría de precios | ✅ Terminada |
 | **2a. Sesión y captura de Trendsi** | Login manual guardado, límite de peticiones, caché, detección de sesión caducada y de «sin resultados», grabación de respuestas reales | ✅ Terminada |
 | 2b. Parsers de Trendsi | Interpretar las respuestas grabadas y guardar productos | Esperando a la primera captura |
-| 3. Inteligencia | Brand Fit Score, economía por producto, duplicados, cola de decisión, exportación | Pendiente |
-| 4. Automatización | Creación en Shopify como borrador, alertas, ejecuciones programadas | Pendiente |
+| **3. Inteligencia** | Brand Fit Score, economía por producto, duplicados, cola de decisión, exportación XLSX/CSV | ✅ Terminada |
+| **4a. Borradores y alertas** | Creación en Shopify como borrador con doble confirmación, alertas de stock, coste y precio | ✅ Escrita, sin probar contra Shopify real |
+| 4b. Ejecuciones programadas | Lanzar las búsquedas solas cada día o semana | Pendiente |
 | 5. Competencia | Adaptadores por tienda, informe semanal de tendencias | Pendiente |
+
+### Qué está probado y qué no
+
+Todo lo que no depende de la red está probado de verdad: **208 pruebas
+automáticas** y **19 pruebas en navegador real**, incluida la descarga del XLSX.
+
+Lo que **no** se ha podido probar contra el servicio real, y conviene saberlo:
+
+- **La sincronización con Shopify.** El cliente, los lectores y las cuatro
+  consultas están validados contra el esquema real de Shopify, pero la llamada
+  con tu token no se ha ejecutado nunca. La harás tú.
+- **La creación de borradores.** Las tres mutaciones están validadas contra el
+  esquema real, pero no se ha creado ningún producto. El primero que crees,
+  míralo en Shopify antes de fiarte.
+- **La lectura de Trendsi.** No existe ninguna captura real todavía, así que no
+  hay lector escrito: la aplicación tiene la sesión y la captura, no la
+  interpretación.
 
 ---
 
@@ -63,19 +81,39 @@ cp .env.example .env
 ```
 
 Ábrelo con cualquier editor de texto. Solo tienes que rellenar una cosa: el
-token de Shopify. Para conseguirlo:
+token de Shopify.
 
-1. Entra en tu admin de Shopify.
-2. **Configuración → Aplicaciones y canales de venta → Desarrollar aplicaciones**.
-3. **Crear una aplicación**, ponle el nombre que quieras (por ejemplo,
-   `Norvik Sourcing Studio`).
-4. En **Configurar los ámbitos de la API de Admin**, marca:
+**Aviso antes de empezar: este paso es el más incómodo de todo el proceso, y no
+es culpa tuya.** Shopify ha cambiado cómo se generan estos tokens y su
+documentación va por detrás de su propia interfaz. Lo que sigue es la ruta que
+funciona a día de hoy, comprobada sobre la tienda real.
+
+1. Entra en tu admin de Shopify y ve a **Configuración → Apps**.
+   (No es «Apps» del menú principal: ese lista las apps instaladas.)
+2. Pulsa **Desarrollar apps en Dev Dashboard**. Te lleva a un panel aparte.
+3. En **Empezar desde Dev Dashboard** (columna derecha, la que no pide escribir
+   comandos), pon un nombre — `Norvik Sourcing Studio` — y pulsa **Crear**.
+4. En el menú de la izquierda, **Versiones → Crear versión**.
+5. Baja hasta **Acceso a la API** y pulsa **Seleccionar alcances**. Marca:
    `read_products`, `write_products`, `read_inventory` y `read_orders`.
-5. **Instalar la aplicación** y pulsa en revelar el token. Empieza por `shpat_`.
-6. Pega ese token en tu `.env`, en la línea `SHOPIFY_ADMIN_TOKEN`.
+   Si buscas `read_price_rules` no lo encontrarás: Shopify lo ha renombrado y
+   esta aplicación no lo necesita.
+6. Marca la casilla **Usar flujo de instalación heredado**. No cambia nada en
+   pantalla, pero se guarda.
+7. **Desmarca** «Incrustar la app en el panel de control de Shopify», más
+   arriba, en «URL de la app».
+8. Pulsa **Publicar** y ponle un nombre a la versión (`v1` sirve).
+9. Vuelve a la vista general de la app. Arriba a la derecha, en
+   **Instalaciones**, pulsa **Instalar app** y acepta.
+10. El token aparece tras la instalación. Empieza por `shpat_`. Pégalo en tu
+    `.env`, en la línea `SHOPIFY_ADMIN_TOKEN`, entre las comillas.
 
 El archivo `.env` no se sube nunca a ningún sitio: está excluido del control de
 versiones precisamente para que tu token no salga de tu ordenador.
+
+**Si te atascas aquí, la aplicación arranca igualmente.** El panel te dirá que
+falta el token y te dejará usar todo lo que no dependa de Shopify: las reglas de
+marca, las búsquedas guardadas y la cola de decisión.
 
 ### 4. Arrancar
 
@@ -98,6 +136,11 @@ tendrás tu catálogo real en pantalla.
 | Sincronizar sin abrir el navegador | `npm run sync:shopify` |
 | Cambiar las horquillas de precio o el margen objetivo | Editar `config/sections.yaml` |
 | Ver qué falló en una ejecución | Pestaña **Ejecuciones** |
+| Decidir qué comprar | Pestaña **Candidatos** |
+| Cambiar los términos de búsqueda | Pestaña **Búsquedas** |
+| Ver roturas de stock y subidas de precio | Pestaña **Alertas** → «Revisar ahora» |
+| Ajustar qué es «Norvik» | Pestaña **Encaje de marca**, o editar `config/brand-rules.yaml` |
+| Descargar la lista de compra | Pestaña **Candidatos** → «Descargar XLSX» |
 
 ### Las pantallas
 
@@ -109,6 +152,19 @@ tendrás tu catálogo real en pantalla.
 - **Auditoría** — todo lo que está mal hoy: productos por encima o por debajo de
   su horquilla, publicados sin stock, fuera de colección o sin sección
   asignable. Cada aviso trae los números en los que se basa.
+- **Candidatos** — la cola de decisión. Cada producto con su foto, su coste
+  real, el PVP sugerido, el margen bruto y neto, y por qué se recomienda o no.
+  Aprobar, aparcar o descartar, con un motivo. Ordenada por encaje de marca
+  primero y margen después: el encaje manda sobre el margen.
+- **Búsquedas** — los términos con los que se busca en Trendsi, por sección.
+  Editables aquí. Si escribes uno demasiado largo se guarda igual y te avisa de
+  cómo se enviará recortado, porque Trendsi no devuelve nada con más de cuatro
+  palabras.
+- **Alertas** — rotura de stock en Trendsi de algo que vendes, subidas de coste
+  por encima del 10%, y productos tuyos con margen bajo o precio fuera de la
+  horquilla. Cada aviso trae los números.
+- **Encaje de marca** — las reglas del score, visibles, y un sitio donde probar
+  un título y ver la puntuación que sacaría y de dónde sale cada punto.
 - **Ejecuciones** — la traza de cada sincronización: cuánto tardó, cuántos
   elementos leyó y cada error que encontró, con su detalle técnico.
 
@@ -186,6 +242,16 @@ objetivo y cómo se decide a qué sección pertenece un producto.
 Si cambias una horquilla, guarda el archivo y recarga la página. Si escribes
 algo que no es válido, la aplicación te lo dirá con el nombre exacto del campo
 en lugar de arrancar con reglas a medio cargar.
+
+### `config/brand-rules.yaml`
+
+Qué es Norvik y qué no: los tejidos, siluetas, colores y palabras que suman o
+restan, y cuánto pesa cada grupo sobre los 100 puntos. También los descartes
+automáticos (ropa infantil, de hombre, deportiva, disfraces, navideño,
+lencería), que no puntúan bajo — se descartan.
+
+La pestaña **Encaje de marca** muestra el contenido de este archivo y te deja
+probar un título para ver el efecto de un cambio.
 
 ### `.env`
 

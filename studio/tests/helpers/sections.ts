@@ -14,6 +14,7 @@ export function makeSection(overrides: Partial<Section> = {}): Section {
     minAcceptableMarginPct: 0.5,
     collections: ['dresses'],
     match: { productTypes: ['dress'], keywords: ['maxi'], requireAny: [] },
+    seedTerms: ['satin maxi dress'],
     ...overrides,
   };
 }
@@ -26,4 +27,5 @@ export const accessoriesSection: Section = {
   minAcceptableMarginPct: 0.5,
   collections: ['accessories'],
   match: { productTypes: ['bag'], keywords: ['bag', 'necklace'], requireAny: [] },
+  seedTerms: ['straw bag'],
 };

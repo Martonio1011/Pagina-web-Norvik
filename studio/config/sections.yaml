@@ -1,6 +1,12 @@
 # ---------------------------------------------------------------------------
 # Norvik store sections.
 #
+# seedTerms are the starting search terms for each section. They are copied
+# into the database the first time you create the saved searches, and from
+# then on you edit them in the app — this file is only the starting point.
+# Every one is deliberately short: Trendsi ANDs every word and returns nothing
+# past four.
+#
 # This file is the single source of truth for how the store is divided, what
 # each section should cost the customer, and how much margin it has to earn.
 # It is versioned in git on purpose: changing a price band is a business
@@ -50,6 +56,11 @@ sections:
           hair clip,
           headband,
         ]
+    seedTerms:
+      - straw bag
+      - pearl necklace
+      - woven tote
+      - raffia bag
 
   - key: jumpsuits
     label: Jumpsuits
@@ -58,6 +69,10 @@ sections:
     match:
       productTypes: [jumpsuit, romper, playsuit]
       keywords: [jumpsuit, romper, playsuit, overall]
+    seedTerms:
+      - wide leg jumpsuit
+      - halter jumpsuit
+      - linen jumpsuit
 
   - key: linen-sets
     label: Linen Sets
@@ -68,6 +83,11 @@ sections:
       # A "set" only belongs here when it reads as one — a top plus a bottom.
       keywords: [two piece set, matching set, top and shorts, top and pants, co-ord, coord, set]
       requireAny: [linen, eyelet, cotton, knit, gauze, crochet]
+    seedTerms:
+      - linen set
+      - linen shorts set
+      - eyelet set
+      - gauze set
 
   # Both dress sections share the same Shopify product type, so length is what
   # separates them and the product type is deliberately not listed here. A
@@ -80,6 +100,11 @@ sections:
     match:
       productTypes: []
       keywords: [maxi, floor length, full length, long dress, gown]
+    seedTerms:
+      - satin maxi dress
+      - linen maxi dress
+      - halter maxi dress
+      - eyelet maxi
 
   - key: mini-midi-dresses
     label: Mini & Midi Dresses
@@ -88,6 +113,10 @@ sections:
     match:
       productTypes: []
       keywords: [mini, midi, knee length, tea length, short dress]
+    seedTerms:
+      - eyelet midi dress
+      - satin midi dress
+      - linen mini dress
 
   - key: resort-wear
     label: Resort Wear
@@ -96,3 +125,8 @@ sections:
     match:
       productTypes: [cover up, swim cover, kaftan, kimono, skirt, top, pants, shorts]
       keywords: [resort, vacation, beach, cover-up, cover up, kaftan, caftan, kimono, sarong, poolside]
+    seedTerms:
+      - resort cover up
+      - linen kimono
+      - beach kaftan
+      - crochet cover up

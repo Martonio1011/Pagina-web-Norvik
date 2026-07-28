@@ -130,3 +130,41 @@ test('the CSV export carries the real numbers', async ({ request }) => {
   expect(csv).toContain('67.99');
   expect(csv).toContain('https://app.trendsi.com/products/detail?id=SYNTH-001');
 });
+
+test('asks for confirmation before creating anything in Shopify', async ({ page }) => {
+  await page.goto('/candidates');
+
+  const approved = page
+    .getByRole('list', { name: 'Candidatos ya decididos' })
+    .getByRole('listitem')
+    .filter({ hasText: 'Satin Halter Maxi Dress' });
+
+  // One click only offers the question — nothing has been sent yet.
+  await approved.getByRole('button', { name: 'Crear borrador en Shopify' }).click();
+
+  await expect(approved).toContainText('como borrador');
+  await expect(approved).toContainText('No se publica');
+  await expect(approved.getByRole('button', { name: 'Sí, crear el borrador' })).toBeVisible();
+
+  // Cancelling leaves everything as it was.
+  await approved.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(approved.getByRole('button', { name: 'Crear borrador en Shopify' })).toBeVisible();
+});
+
+test('says plainly that Shopify is not configured rather than failing obscurely', async ({
+  page,
+}) => {
+  await page.goto('/candidates');
+
+  const approved = page
+    .getByRole('list', { name: 'Candidatos ya decididos' })
+    .getByRole('listitem')
+    .filter({ hasText: 'Satin Halter Maxi Dress' });
+
+  await approved.getByRole('button', { name: 'Crear borrador en Shopify' }).click();
+  await approved.getByRole('button', { name: 'Sí, crear el borrador' }).click();
+
+  // No admin token is set in the test environment, and that is exactly the
+  // state a new install is in, so the message has to be actionable.
+  await expect(approved.getByRole('status')).toContainText('Falta el token');
+});
