@@ -52,10 +52,20 @@ powershell -NoProfile -Command "try { $s = (New-Object -ComObject WScript.Shell)
 if exist "%ACCESO%" echo  Te he dejado un acceso directo en el Escritorio.
 
 :arrancar
+rem Direccion en la red local, para abrir la app desde el movil.
+set "IPLAN="
+for /f "usebackq delims=" %%A in (`powershell -NoProfile -Command "[System.Net.Dns]::GetHostAddresses($env:COMPUTERNAME) ^| Where-Object AddressFamily -eq 'InterNetwork' ^| Select-Object -First 1 -ExpandProperty IPAddressToString"`) do set "IPLAN=%%A"
+
 echo.
 echo  Arrancando. El navegador se abrira solo en unos segundos.
 echo.
-echo  Direccion:  http://localhost:3000
+echo  ==========================================
+echo    EN ESTE ORDENADOR:  http://localhost:3000
+if defined IPLAN echo    EN EL MOVIL:        http://%IPLAN%:3000
+echo  ==========================================
+if defined IPLAN echo.
+if defined IPLAN echo  Para el movil: conectalo al MISMO wifi que este PC
+if defined IPLAN echo  y escribe esa direccion en el navegador.
 echo.
 echo  PARA CERRAR LA APP: cierra esta ventana negra.
 echo.
