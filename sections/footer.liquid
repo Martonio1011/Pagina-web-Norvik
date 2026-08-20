@@ -119,6 +119,20 @@
     width: auto;
     border-radius: 3px;
   }
+  #shopify-section-{{ section.id }} .site-footer__follow-instagram {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-footer-text);
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .site-footer__follow-instagram:hover {
+    opacity: 1;
+  }
 
   @media (max-width: 860px) {
     #shopify-section-{{ section.id }} .site-footer { padding: 48px 24px 24px; }
@@ -190,6 +204,10 @@
 
   <div class="site-footer__bottom">
     <span class="site-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | downcase }}. {{ section.settings.rights_text }}</span>
+    <a class="site-footer__follow-instagram" href="https://www.instagram.com/norvik.studioo" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="4" stroke="currentColor"/><circle cx="8" cy="8" r="3.2" stroke="currentColor"/><circle cx="11.6" cy="4.4" r="0.8" fill="currentColor"/></svg>
+      <span>@norvik.studioo</span>
+    </a>
     {% if shop.enabled_payment_types.size > 0 %}
       <div class="site-footer__payments">
         {% for type in shop.enabled_payment_types %}
