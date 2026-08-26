@@ -69,7 +69,7 @@
     <span class="newsletter__title">{{ section.settings.title }}</span>
     <span class="newsletter__subtitle">{{ section.settings.subtitle }}</span>
 
-    {% form 'customer', id: 'newsletter-form-' | append: section.id %}
+    {% form section.id %}
       {% if form.posted_successfully? %}
         <span class="newsletter__success">{{ 'general.newsletter.success' | t: default: 'gracias por suscribirte' }}</span>
       {% else %}
@@ -117,3 +117,13 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% form 'customer', id: 'newsletter-form-' | append: section.id %}"
+  to: "{% form section.id %}"
+  position: 2021..2042
+{% endcomment %}

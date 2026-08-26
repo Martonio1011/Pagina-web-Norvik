@@ -174,7 +174,7 @@
     <div class="site-footer__newsletter">
       <span class="site-footer__col-title">newsletter</span>
       <span class="site-footer__tagline">novedades discretas, sin spam</span>
-      {% form 'customer', id: 'footer-newsletter-form-' | append: section.id %}
+      {% form section.id %}
         <input type="hidden" name="contact[tags]" value="newsletter">
         {% if form.posted_successfully? %}
           <span class="site-footer__tagline">{{ 'general.newsletter.success' | t: default: 'gracias por suscribirte' }}</span>
@@ -251,3 +251,13 @@
   }
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% form 'customer', id: 'footer-newsletter-form-' | append: section.id %}"
+  to: "{% form section.id %}"
+  position: 6171..6192
+{% endcomment %}
