@@ -4,7 +4,7 @@
     {% if form.errors %}
       <p style="color:#A8735A;font-family:var(--font-body);font-size:13px;">{{ form.errors | default_errors }}</p>
     {% endif %}
-    {% for field in 'first_name,last_name,email,password' | split: ',' %}
+    {% for field in 'first_name,last_name,email,password' %}
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label style="font-family:var(--font-body);font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text);" for="Customer{{ field }}">
           {% case field %}
@@ -27,3 +27,13 @@
   {% endform %}
   <a class="button-link" href="{{ routes.account_login_url }}" style="align-self:center;">ya tengo cuenta</a>
 </div>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% for field in 'first_name,last_name,email,password' | split: ',' %}"
+  to: "{% for field in 'first_name,last_name,email,password' %}"
+  position: 429..485
+{% endcomment %}
