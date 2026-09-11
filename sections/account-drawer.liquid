@@ -1,0 +1,227 @@
+{% style %}
+  #shopify-section-{{ section.id }} .account-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(43,38,33,0.4);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .account-drawer-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #shopify-section-{{ section.id }} .account-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 92%;
+    max-width: 400px;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+  }
+  #shopify-section-{{ section.id }} .account-drawer-overlay.is-open .account-drawer {
+    transform: translateX(0);
+  }
+  #shopify-section-{{ section.id }} .account-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(43,38,33,0.1);
+  }
+  #shopify-section-{{ section.id }} .account-drawer__title {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__view { display: none; }
+  #shopify-section-{{ section.id }} .account-drawer__view.is-active { display: block; }
+  #shopify-section-{{ section.id }} .account-drawer__intro {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__field {
+    margin-bottom: 16px;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: 6px;
+    text-transform: lowercase;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__input {
+    width: 100%;
+    border: 1px solid var(--color-sand);
+    background: transparent;
+    padding: 11px 12px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--color-text);
+    outline: none;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__input:focus {
+    border-color: var(--color-text);
+  }
+  #shopify-section-{{ section.id }} .account-drawer__submit {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--color-text);
+    color: var(--color-bg);
+    border: none;
+    padding: 14px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__error {
+    color: #B3261E;
+    font-size: 12px;
+    margin: -8px 0 14px;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__switch {
+    margin-top: 22px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+  }
+  #shopify-section-{{ section.id }} .account-drawer__switch button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--color-text);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  #shopify-section-{{ section.id }} .account-drawer__forgot {
+    display: block;
+    margin-top: -8px;
+    margin-bottom: 18px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-align: right;
+  }
+{% endstyle %}
+
+<div class="account-drawer-overlay" data-account-drawer-overlay data-account-drawer>
+  <div class="account-drawer" role="dialog" aria-modal="true" aria-label="{{ 'general.account.title' | t: default: 'cuenta' }}">
+    <div class="account-drawer__header">
+      <span class="account-drawer__title" data-account-drawer-heading>{{ 'general.account.login_title' | t: default: 'inicia sesión' }}</span>
+      <button class="account-drawer__close" data-account-drawer-close aria-label="{{ 'general.accessibility.close' | t: default: 'cerrar' }}">&times;</button>
+    </div>
+    <div class="account-drawer__body">
+
+      {%- comment -%} Iniciar sesión {%- endcomment -%}
+      <div class="account-drawer__view is-active" data-account-view="login" data-account-heading="{{ 'general.account.login_title' | t: default: 'inicia sesión' }}">
+        {% form 'customer_login' %}
+          {% if form.errors %}
+            <p class="account-drawer__error">{{ 'general.account.login_error' | t: default: 'email o contraseña incorrectos' }}</p>
+          {% endif %}
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-LoginEmail">{{ 'general.account.email' | t: default: 'correo electrónico' }}</label>
+            <input class="account-drawer__input" type="email" name="customer[email]" id="AccountDrawer-LoginEmail" autocomplete="email" autocorrect="off" autocapitalize="off" required>
+          </div>
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-LoginPassword">{{ 'general.account.password' | t: default: 'contraseña' }}</label>
+            <input class="account-drawer__input" type="password" name="customer[password]" id="AccountDrawer-LoginPassword" autocomplete="current-password" required>
+          </div>
+          <a class="account-drawer__forgot" href="#" data-account-view-trigger="recover">{{ 'general.account.forgot_password' | t: default: '¿olvidaste tu contraseña?' }}</a>
+          <button type="submit" class="account-drawer__submit">{{ 'general.account.login_submit' | t: default: 'acceder' }}</button>
+        {% endform %}
+        <div class="account-drawer__switch">
+          {{ 'general.account.no_account' | t: default: '¿aún no tienes cuenta?' }}
+          <button type="button" data-account-view-trigger="register">{{ 'general.account.create_account' | t: default: 'crear una cuenta' }}</button>
+        </div>
+      </div>
+
+      {%- comment -%} Crear cuenta {%- endcomment -%}
+      <div class="account-drawer__view" data-account-view="register" data-account-heading="{{ 'general.account.register_title' | t: default: 'crear cuenta' }}">
+        {% form 'create_customer' %}
+          {% if form.errors %}
+            <p class="account-drawer__error">{{ form.errors | default_errors }}</p>
+          {% endif %}
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-RegisterFirstName">{{ 'general.account.first_name' | t: default: 'nombre' }}</label>
+            <input class="account-drawer__input" type="text" name="customer[first_name]" id="AccountDrawer-RegisterFirstName" autocomplete="given-name">
+          </div>
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-RegisterLastName">{{ 'general.account.last_name' | t: default: 'apellidos' }}</label>
+            <input class="account-drawer__input" type="text" name="customer[last_name]" id="AccountDrawer-RegisterLastName" autocomplete="family-name">
+          </div>
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-RegisterEmail">{{ 'general.account.email' | t: default: 'correo electrónico' }}</label>
+            <input class="account-drawer__input" type="email" name="customer[email]" id="AccountDrawer-RegisterEmail" autocomplete="email" autocorrect="off" autocapitalize="off" required>
+          </div>
+          <div class="account-drawer__field">
+            <label class="account-drawer__label" for="AccountDrawer-RegisterPassword">{{ 'general.account.password' | t: default: 'contraseña' }}</label>
+            <input class="account-drawer__input" type="password" name="customer[password]" id="AccountDrawer-RegisterPassword" autocomplete="new-password" required>
+          </div>
+          <button type="submit" class="account-drawer__submit">{{ 'general.account.register_submit' | t: default: 'crear cuenta' }}</button>
+        {% endform %}
+        <div class="account-drawer__switch">
+          {{ 'general.account.has_account' | t: default: '¿ya tienes cuenta?' }}
+          <button type="button" data-account-view-trigger="login">{{ 'general.account.login_submit' | t: default: 'acceder' }}</button>
+        </div>
+      </div>
+
+      {%- comment -%} Recuperar contraseña {%- endcomment -%}
+      <div class="account-drawer__view" data-account-view="recover" data-account-heading="{{ 'general.account.recover_title' | t: default: 'restablecer contraseña' }}">
+        {% form 'recover_customer_password' %}
+          {% if form.errors %}
+            <p class="account-drawer__error">{{ 'general.account.recover_error' | t: default: 'no encontramos ese correo' }}</p>
+          {% endif %}
+          {% if form.posted_successfully? %}
+            <p class="account-drawer__intro account-drawer__success">{{ 'general.account.recover_success' | t: default: 'te hemos enviado un correo con instrucciones para restablecer tu contraseña.' }}</p>
+          {% else %}
+            <p class="account-drawer__intro">{{ 'general.account.recover_intro' | t: default: 'te enviaremos un correo para restablecer tu contraseña.' }}</p>
+            <div class="account-drawer__field">
+              <label class="account-drawer__label" for="AccountDrawer-RecoverEmail">{{ 'general.account.email' | t: default: 'correo electrónico' }}</label>
+              <input class="account-drawer__input" type="email" name="email" id="AccountDrawer-RecoverEmail" autocomplete="email" autocorrect="off" autocapitalize="off" required>
+            </div>
+            <button type="submit" class="account-drawer__submit">{{ 'general.account.recover_submit' | t: default: 'enviar' }}</button>
+          {% endif %}
+        {% endform %}
+        <div class="account-drawer__switch">
+          <button type="button" data-account-view-trigger="login">{{ 'general.account.back_to_login' | t: default: 'volver a iniciar sesión' }}</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cuenta (panel)"
+}
+{% endschema %}

@@ -1,10 +1,71 @@
 document.addEventListener('DOMContentLoaded', function () {
   initMobileNav();
   initCartDrawer();
+  initAccountDrawer();
   initSearchToggle();
   initFilterDropdowns();
   initProductVariantPicker();
 });
+
+function initAccountDrawer() {
+  var drawer = document.querySelector('[data-account-drawer]');
+  var overlay = document.querySelector('[data-account-drawer-overlay]');
+  var heading = document.querySelector('[data-account-drawer-heading]');
+  if (!drawer) return;
+
+  function open() {
+    drawer.classList.add('is-open');
+    document.body.classList.add('no-scroll');
+  }
+  function close() {
+    drawer.classList.remove('is-open');
+    document.body.classList.remove('no-scroll');
+  }
+  function showView(name) {
+    var views = drawer.querySelectorAll('[data-account-view]');
+    views.forEach(function (view) {
+      var isMatch = view.getAttribute('data-account-view') === name;
+      view.classList.toggle('is-active', isMatch);
+      if (isMatch && heading) heading.textContent = view.getAttribute('data-account-heading');
+    });
+  }
+
+  document.querySelectorAll('[data-account-drawer-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var mobileNavPanel = document.querySelector('[data-mobile-nav-panel]');
+      if (mobileNavPanel) {
+        mobileNavPanel.classList.remove('is-open');
+        var mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
+        if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+      }
+      showView('login');
+      open();
+    });
+  });
+  document.querySelectorAll('[data-account-drawer-close]').forEach(function (btn) {
+    btn.addEventListener('click', close);
+  });
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+  }
+
+  drawer.querySelectorAll('[data-account-view-trigger]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      showView(btn.getAttribute('data-account-view-trigger'));
+    });
+  });
+
+  var postedTrigger = drawer.querySelector('.account-drawer__error, .account-drawer__success');
+  if (postedTrigger) {
+    var postedView = postedTrigger.closest('[data-account-view]');
+    if (postedView) showView(postedView.getAttribute('data-account-view'));
+    open();
+  }
+}
 
 function initProductVariantPicker() {
   document.querySelectorAll('[data-product-form]').forEach(function (form) {

@@ -24,13 +24,18 @@
     display: flex;
     align-items: center;
     gap: 28px;
-    overflow: hidden;
     min-width: 0;
   }
   #shopify-section-{{ section.id }} .site-header__nav {
     display: flex;
     gap: 28px;
     min-width: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav > li {
+    position: relative;
   }
   #shopify-section-{{ section.id }} .site-header__nav a {
     font-family: var(--font-body);
@@ -40,6 +45,75 @@
     text-decoration: none;
     text-transform: lowercase;
     white-space: nowrap;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav > li > a {
+    display: inline-block;
+    padding: 6px 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav > li:hover > a,
+  #shopify-section-{{ section.id }} .site-header__nav > li:focus-within > a {
+    border-bottom-color: var(--color-text);
+  }
+
+  /* Mega-menú */
+  #shopify-section-{{ section.id }} .mega-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 420px;
+    background: var(--color-bg);
+    border: 1px solid rgba(43,38,33,0.1);
+    box-shadow: 0 12px 28px rgba(43,38,33,0.08);
+    padding: 28px 32px;
+    display: flex;
+    gap: 40px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 50;
+  }
+  #shopify-section-{{ section.id }} .site-header__nav > li:hover .mega-dropdown,
+  #shopify-section-{{ section.id }} .site-header__nav > li:focus-within .mega-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  #shopify-section-{{ section.id }} .mega-dropdown__col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 140px;
+  }
+  #shopify-section-{{ section.id }} .mega-dropdown__col-title {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+  #shopify-section-{{ section.id }} .mega-dropdown__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #shopify-section-{{ section.id }} .mega-dropdown__col a,
+  #shopify-section-{{ section.id }} .mega-dropdown__link {
+    font-size: 13px;
+    color: var(--color-text);
+    text-decoration: none;
+    text-transform: none;
+    white-space: nowrap;
+  }
+  #shopify-section-{{ section.id }} .mega-dropdown__col a:hover,
+  #shopify-section-{{ section.id }} .mega-dropdown__link:hover {
+    color: var(--color-sage);
   }
   #shopify-section-{{ section.id }} .site-header__logo-col {
     text-align: center;
@@ -183,6 +257,47 @@
     text-decoration: none;
     color: var(--color-text);
   }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__accordion {
+    border-bottom: 1px solid rgba(43,38,33,0.08);
+    padding-bottom: 14px;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-body);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color: var(--color-text);
+    cursor: pointer;
+    list-style: none;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__accordion summary::-webkit-details-marker { display: none; }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__caret {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    transition: transform 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__accordion[open] > summary .mobile-nav-panel__caret {
+    transform: rotate(180deg);
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px 0 4px 14px;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__submenu a {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .mobile-nav-panel__accordion--nested summary {
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+  }
 
   @media (max-width: 860px) {
     #shopify-section-{{ section.id }} .site-header__inner { padding: 16px 20px; }
@@ -213,11 +328,33 @@
         <span></span><span></span><span></span>
       </button>
       {% if menu != blank %}
-        <nav class="site-header__nav" aria-label="{{ 'general.accessibility.main_nav' | t: default: 'navegación principal' }}">
+        <ul class="site-header__nav" aria-label="{{ 'general.accessibility.main_nav' | t: default: 'navegación principal' }}">
           {% for link in menu.links %}
-            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | downcase }}</a>
+            <li>
+              <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | downcase }}</a>
+              {% if link.links.size > 0 %}
+                <div class="mega-dropdown">
+                  {% for sublink in link.links %}
+                    {% if sublink.links.size > 0 %}
+                      <div class="mega-dropdown__col">
+                        <span class="mega-dropdown__col-title">{{ sublink.title }}</span>
+                        <ul>
+                          {% for grandchild in sublink.links %}
+                            <li><a href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% else %}
+                      <div class="mega-dropdown__col">
+                        <a class="mega-dropdown__link" href="{{ sublink.url }}">{{ sublink.title }}</a>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </li>
           {% endfor %}
-        </nav>
+        </ul>
       {% endif %}
     </div>
 
@@ -245,9 +382,15 @@
       <button class="site-header__icon-btn" data-search-toggle aria-label="{{ 'general.search.title' | t: default: 'buscar' }}">
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor"/><line x1="11.5" y1="11.5" x2="16" y2="16" stroke="currentColor"/></svg>
       </button>
-      <a class="site-header__icon-btn" href="{{ routes.account_url }}" aria-label="{{ 'general.account.title' | t: default: 'cuenta' }}">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="7" stroke="currentColor"/></svg>
-      </a>
+      {% if customer %}
+        <a class="site-header__icon-btn" href="{{ routes.account_url }}" aria-label="{{ 'general.account.title' | t: default: 'cuenta' }}">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="7" stroke="currentColor"/></svg>
+        </a>
+      {% else %}
+        <button class="site-header__icon-btn" data-account-drawer-toggle aria-label="{{ 'general.account.title' | t: default: 'cuenta' }}">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="7" stroke="currentColor"/></svg>
+        </button>
+      {% endif %}
       <button class="site-header__icon-btn" data-cart-drawer-toggle aria-label="{{ 'general.cart.title' | t: default: 'carrito' }}">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none">
           <rect x="0.5" y="5.5" width="16" height="10" rx="1" stroke="currentColor"/>
@@ -264,10 +407,36 @@
       <nav class="mobile-nav-panel__links">
         {% if menu != blank %}
           {% for link in menu.links %}
-            <a href="{{ link.url }}">{{ link.title | downcase }}</a>
+            {% if link.links.size > 0 %}
+              <details class="mobile-nav-panel__accordion">
+                <summary>{{ link.title | downcase }}<span class="mobile-nav-panel__caret">&#9662;</span></summary>
+                <div class="mobile-nav-panel__submenu">
+                  {% for sublink in link.links %}
+                    {% if sublink.links.size > 0 %}
+                      <details class="mobile-nav-panel__accordion mobile-nav-panel__accordion--nested">
+                        <summary>{{ sublink.title }}<span class="mobile-nav-panel__caret">&#9662;</span></summary>
+                        <div class="mobile-nav-panel__submenu">
+                          {% for grandchild in sublink.links %}
+                            <a href="{{ grandchild.url }}">{{ grandchild.title }}</a>
+                          {% endfor %}
+                        </div>
+                      </details>
+                    {% else %}
+                      <a href="{{ sublink.url }}">{{ sublink.title }}</a>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </details>
+            {% else %}
+              <a href="{{ link.url }}">{{ link.title | downcase }}</a>
+            {% endif %}
           {% endfor %}
         {% endif %}
-        <a href="{{ routes.account_url }}">{{ 'general.account.title' | t: default: 'cuenta' }}</a>
+        {% if customer %}
+          <a href="{{ routes.account_url }}">{{ 'general.account.title' | t: default: 'cuenta' }}</a>
+        {% else %}
+          <a href="#" data-account-drawer-toggle>{{ 'general.account.title' | t: default: 'cuenta' }}</a>
+        {% endif %}
       </nav>
     </div>
   </div>
